@@ -66,8 +66,8 @@ interface BcvRateComparison {
   styles: [
     `
     .mdc-data-table__cell, .mdc-data-table__header-cell {
-    padding: 0 7px;
-}
+          padding: 0 7px;
+      }
     `
   ]
 })
@@ -196,12 +196,12 @@ export class InicioComponent implements OnInit {
 
       processRate(current.total_rate, previous.total_rate, 'Total'),
       processRate(current.yadio_rate, previous.yadio_rate, 'Yadio'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'CambiosRya'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'Airtm'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'Usdtbnbvzla'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'Syklo'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'Mkfrontera'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'Billeterap2p'),
+      processRate(current.cambiosrya_rate, previous.cambiosrya_rate, 'CambiosRya'),
+      processRate(current.airtm_rate, previous.airtm_rate, 'Airtm'),
+      processRate(current.usdtbnbvzla_rate, previous.usdtbnbvzla_rate, 'Usdtbnbvzla'),
+      processRate(current.syklo_rate, previous.syklo_rate, 'Syklo'),
+      processRate(current.mkfrontera_rate, previous.mkfrontera_rate, 'Mkfrontera'),
+      processRate(current.billeterap2p_rate, previous.billeterap2p_rate, 'Billeterap2p'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Eldorado'),
 
     ];

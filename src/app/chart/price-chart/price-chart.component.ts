@@ -153,7 +153,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       // Procesar y ordenar los datos para el gráfico
       this.monitorData = monitorRates
         .map(rate => ({
-          time: moment(rate.datetime).valueOf() as UTCTimestamp,
+          time: this.getTimeForSeries(moment(rate.datetime)) as UTCTimestamp,
           value: rate.total_rate
         }))
         .sort((a, b) => (a.time as number) - (b.time as number))
@@ -164,14 +164,14 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.exchangeData = exchangeRates
         .map(rate => ({
-          time: moment(rate.created_at).valueOf() as UTCTimestamp,
+          time: this.getTimeForSeries(moment(rate.created_at)) as UTCTimestamp,
           value: rate.total_rate
         }))
         .sort((a, b) => (a.time as number) - (b.time as number))
         // Eliminar duplicados basados en el tiempo
-        // .filter((item, index, self) =>
-        //   index === 0 || item.time !== self[index - 1].time
-        // );
+        .filter((item, index, self) =>
+          index === 0 || item.time !== self[index - 1].time
+        );
 
         console.log(this.exchangeData);
 
@@ -282,6 +282,15 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         borderColor: isDark ? '#2B2B43' : '#E6E6E6',
         timeVisible: true,
         secondsVisible: false,
+        tickMarkFormatter: (time: UTCTimestamp) => {
+          const date = new Date(time * 1000);
+          return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        },
+        rightOffset: 5,
+        barSpacing: 5,
+        minBarSpacing: 5,
+        fixLeftEdge: true,
+        fixRightEdge: true
       },
       crosshair: {
         vertLine: {
@@ -300,16 +309,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Convertir las fechas al formato esperado por el gráfico
-  private getTimeForSeries(dateStr: string): number {
-    // Formatear según la unidad de tiempo seleccionada
-    const date = moment.utc(dateStr);
-
-    if (this.settings.timeUnit === 'hour') {
-      // Para unidad horaria, convertir a timestamp en segundos
-      return (date.valueOf() / 1000) as UTCTimestamp;
-    } else {
-      // Para unidad diaria, normalizar a inicio del día y convertir a timestamp en segundos
-      return (date.startOf('day').valueOf() / 1000) as UTCTimestamp;
-    }
+  private getTimeForSeries(momentObj: moment.Moment): number {
+    return Math.floor(momentObj.valueOf() / 1000) as UTCTimestamp;
   }
 }

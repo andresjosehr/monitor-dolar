@@ -12,7 +12,7 @@
     <!-- Opciones de configuración -->
     <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
       <div class="flex flex-wrap items-center gap-3">
-        <mat-form-field appearance="outline" class="w-32">
+        <mat-form-field class="w-32">
           <mat-label>Tema</mat-label>
           <mat-select [(ngModel)]="settings.theme" (selectionChange)="updateChartSettings()">
             <mat-option *ngFor="let option of themeOptions" [value]="option.value">
@@ -21,7 +21,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-32">
+        <mat-form-field class="w-32">
           <mat-label>Unidad</mat-label>
           <mat-select [(ngModel)]="settings.timeUnit" (selectionChange)="loadChartData()">
             <mat-option *ngFor="let option of timeUnitOptions" [value]="option.value">
