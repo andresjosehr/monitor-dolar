@@ -139,11 +139,11 @@ export class InicioComponent implements OnInit {
     });
 
     this.exchangeComparisons = [
+      processRate(current.total_rate, previous.total_rate, 'Total'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Binance'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Eldorado'),
       processRate(current.syklo_rate, previous.syklo_rate, 'Syklo'),
       processRate(current.yadio_rate, previous.yadio_rate, 'Yadio'),
-      processRate(current.total_rate, previous.total_rate, 'Total')
     ];
   }
 
@@ -164,15 +164,7 @@ export class InicioComponent implements OnInit {
 
     this.monitorComparisons = [
 
-      // airtm_rate
-      // billeterap2p_rate
-      // cambiosrya_rate
-      // eldorado_rate
-      // mkfrontera_rate
-      // syklo_rate
-      // usdtbnbvzla_rate
-      // yadio_rate
-
+      processRate(current.total_rate, previous.total_rate, 'Total'),
       processRate(current.yadio_rate, previous.yadio_rate, 'Yadio'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'CambiosRya'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Airtm'),
@@ -182,7 +174,6 @@ export class InicioComponent implements OnInit {
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Billeterap2p'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Eldorado'),
 
-      processRate(current.total_rate, previous.total_rate, 'Total')
     ];
   }
 
@@ -210,6 +201,15 @@ export class InicioComponent implements OnInit {
 
     this.combinedRates = [
       {
+        exchange: 'Total',
+        exchange_rate: latestExchange.total_rate || 0,
+        monitor_rate: latestMonitor.total_rate || 0,
+        ...this.calculateDifference(latestExchange.total_rate || 0, latestMonitor.total_rate || 0),
+        last_update_exchange: exchangeMoment,
+        last_update_monitor: monitorMoment,
+        tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
+      },
+      {
         exchange: 'Eldorado',
         exchange_rate: latestExchange.eldorado_rate || 0,
         monitor_rate: latestMonitor.eldorado_rate || 0,
@@ -236,15 +236,6 @@ export class InicioComponent implements OnInit {
         last_update_monitor: monitorMoment,
         tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
       },
-      {
-        exchange: 'Total',
-        exchange_rate: latestExchange.total_rate || 0,
-        monitor_rate: latestMonitor.total_rate || 0,
-        ...this.calculateDifference(latestExchange.total_rate || 0, latestMonitor.total_rate || 0),
-        last_update_exchange: exchangeMoment,
-        last_update_monitor: monitorMoment,
-        tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
-      }
     ];
   }
 }
