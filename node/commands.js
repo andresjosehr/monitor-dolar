@@ -1,3 +1,48 @@
+/**
+ * @fileoverview Comandos CLI para el monitoreo de tasas de cambio y conversiones
+ *
+ * Este archivo contiene los comandos disponibles para interactuar con diferentes
+ * servicios de cambio de moneda y obtener tasas de cambio.
+ *
+ * Comandos disponibles:
+ *
+ * 1. bcvToBinance <usd-bcv-amount>
+ *    - Convierte una cantidad de USD (según tasa BCV) a su equivalente en Binance
+ *    - Ejemplo: node commands.js bcvToBinance 100
+ *
+ * 2. bcvToEldorado <usd-bcv-amount>
+ *    - Convierte una cantidad de USD (según tasa BCV) a su equivalente en El Dorado
+ *    - Ejemplo: node commands.js bcvToEldorado 100
+ *
+ * 3. sykloRate
+ *    - Obtiene la tasa actual de Syklo
+ *    - Ejemplo: node commands.js sykloRate
+ *
+ * 4. yadioRate
+ *    - Obtiene la tasa actual de Yadio
+ *    - Ejemplo: node commands.js yadioRate
+ *
+ * 5. binanceRate
+ *    - Obtiene la tasa actual de Binance
+ *    - Ejemplo: node commands.js binanceRate
+ *
+ * 6. eldoradoRate
+ *    - Obtiene la tasa actual de El Dorado
+ *    - Ejemplo: node commands.js eldoradoRate
+ *
+ * 7. allRates
+ *    - Obtiene todas las tasas disponibles de todos los servicios
+ *    - Ejemplo: node commands.js allRates
+ *
+ * 8. averageRate
+ *    - Calcula el promedio de todas las tasas disponibles
+ *    - Ejemplo: node commands.js averageRate
+ *
+ * 9. monitorDolarRate
+ *    - Obtiene la tasa de Monitor Dolar
+ *    - Ejemplo: node commands.js monitorDolarRate
+ */
+
 // Import
 const { getBCVRate } = require("./index");
 const { program } = require("commander");
@@ -11,7 +56,7 @@ const monitorDolarService = require("./src/services/exchange/monitor-dolar.servi
 
 program
   .command("bcvToBinance <usd-bcv-amount>")
-  .description("Hace el calculo de cuanto dolares en binance equivalen a la cantidad de dolares en bcv")
+  .description("Convierte una cantidad de USD (según tasa BCV) a su equivalente en Binance. Calcula primero el valor en VES usando la tasa BCV y luego busca la mejor oferta de venta en Binance.")
   .action(async (usdAmount) => {
     try {
       const bcvRate = await bcvService.getRate();
@@ -32,7 +77,7 @@ program
 
 program
   .command("bcvToEldorado <usd-bcv-amount>")
-  .description("Obtiene información de ofertas en el dorado")
+  .description("Convierte una cantidad de USD (según tasa BCV) a su equivalente en El Dorado. Calcula primero el valor en VES usando la tasa BCV y luego busca la mejor oferta de venta en El Dorado.")
   .action(async (usdAmount) => {
     try {
       const bcvRate = await bcvService.getRate();
@@ -53,7 +98,7 @@ program
 
 program
   .command("sykloRate")
-  .description("Obtiene información de tasa de syklo")
+  .description("Obtiene la tasa de cambio actual de Syklo. Muestra el valor de compra y venta de USD en VES según las cotizaciones de Syklo.")
   .action(async () => {
     try {
       const rate = await sykloService.getRate();
@@ -65,7 +110,7 @@ program
 
 program
   .command("yadioRate")
-  .description("Obtiene información de tasa de yadio")
+  .description("Obtiene la tasa de cambio actual de Yadio. Muestra el valor de compra y venta de USD en VES según las cotizaciones de Yadio.")
   .action(async () => {
     try {
       const rate = await yadioService.getRate();
@@ -77,7 +122,7 @@ program
 
 program
   .command("binanceRate")
-  .description("Obtiene información de tasa de binance")
+  .description("Obtiene la tasa de cambio actual de Binance. Muestra el valor de compra y venta de USDT en VES según las ofertas disponibles en Binance P2P.")
   .action(async () => {
     try {
       const rate = await binanceService.getRate();
@@ -89,7 +134,7 @@ program
 
 program
   .command("eldoradoRate")
-  .description("Obtiene información de tasa de eldorado")
+  .description("Obtiene la tasa de cambio actual de El Dorado. Muestra el valor de compra y venta de USD en VES según las cotizaciones de El Dorado.")
   .action(async () => {
     try {
       const rate = await eldoradoService.getRate();
@@ -101,7 +146,7 @@ program
 
 program
   .command("allRates")
-  .description("Obtiene todas las tasas disponibles")
+  .description("Obtiene y muestra todas las tasas disponibles de todos los servicios configurados. Incluye tasas de BCV, Binance, El Dorado, Yadio, Syklo y Monitor Dolar.")
   .action(async () => {
     try {
       const { rates, errors } = await exchangeService.getAllRates();
@@ -114,9 +159,9 @@ program
     }
   });
 
-  program
+program
   .command("averageRate")
-  .description("Obtiene el promedio de todas las tasas disponibles")
+  .description("Calcula y muestra el promedio de todas las tasas disponibles. También muestra las tasas individuales y cualquier error que haya ocurrido al obtener las tasas.")
   .action(async () => {
     try {
       const { average, rates, errors } = await exchangeService.getAverageRate();
@@ -130,11 +175,9 @@ program
     }
   });
 
-
-
-  program
+program
   .command("monitorDolarRate")
-  .description("Obtiene el promedio de todas las tasas disponibles")
+  .description("Obtiene la tasa de cambio actual de Monitor Dolar. Muestra el valor de compra y venta de USD en VES según las cotizaciones de Monitor Dolar.")
   .action(async () => {
     try {
       const rates = await monitorDolarService.getRate();
