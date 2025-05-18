@@ -150,16 +150,30 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dateRange.startDate, this.dateRange.endDate
       );
 
-      // Procesar los datos para el gráfico
-      this.monitorData = monitorRates.map(rate => ({
-        time: this.getTimeForSeries(rate.datetime) as UTCTimestamp,
-        value: rate.total_rate
-      }));
+      // Procesar y ordenar los datos para el gráfico
+      this.monitorData = monitorRates
+        .map(rate => ({
+          time: moment(rate.datetime).valueOf() as UTCTimestamp,
+          value: rate.total_rate
+        }))
+        .sort((a, b) => (a.time as number) - (b.time as number))
+        // Eliminar duplicados basados en el tiempo
+        .filter((item, index, self) =>
+          index === 0 || item.time !== self[index - 1].time
+        );
 
-      this.exchangeData = exchangeRates.map(rate => ({
-        time: this.getTimeForSeries(rate.created_at) as UTCTimestamp,
-        value: rate.total_rate
-      }));
+      this.exchangeData = exchangeRates
+        .map(rate => ({
+          time: moment(rate.created_at).valueOf() as UTCTimestamp,
+          value: rate.total_rate
+        }))
+        .sort((a, b) => (a.time as number) - (b.time as number))
+        // Eliminar duplicados basados en el tiempo
+        // .filter((item, index, self) =>
+        //   index === 0 || item.time !== self[index - 1].time
+        // );
+
+        console.log(this.exchangeData);
 
       // Actualizar el gráfico si ya está inicializado
       if (this.chart) {
@@ -288,14 +302,14 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   // Convertir las fechas al formato esperado por el gráfico
   private getTimeForSeries(dateStr: string): number {
     // Formatear según la unidad de tiempo seleccionada
-    const date = moment(dateStr);
+    const date = moment.utc(dateStr);
 
     if (this.settings.timeUnit === 'hour') {
-      // Para unidad horaria, mantener hora
-      return date.unix() as UTCTimestamp;
+      // Para unidad horaria, convertir a timestamp en segundos
+      return (date.valueOf() / 1000) as UTCTimestamp;
     } else {
-      // Para unidad diaria, normalizar a inicio del día
-      return date.startOf('day').unix() as UTCTimestamp;
+      // Para unidad diaria, normalizar a inicio del día y convertir a timestamp en segundos
+      return (date.startOf('day').valueOf() / 1000) as UTCTimestamp;
     }
   }
 }
