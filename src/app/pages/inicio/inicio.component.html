@@ -1,116 +1,144 @@
-<div class="container">
-  <mat-card class="mb-4">
-    <mat-card-header>
-      <mat-card-title>Tasas de Cambio</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <table mat-table [dataSource]="exchangeRates" class="mat-elevation-z8">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let element">{{element.id}}</td>
-        </ng-container>
+<div class="container mx-auto p-4">
+  <!-- Panel de comparación rápida -->
+  <h1 class="text-2xl font-bold mb-6 text-gray-800">Dashboard de Tasas de Cambio</h1>
 
-        <ng-container matColumnDef="binance_rate">
-          <th mat-header-cell *matHeaderCellDef>Binance</th>
-          <td mat-cell *matCellDef="let element">{{element.binance_rate}}</td>
-        </ng-container>
+  <div class="mb-8">
+    <mat-card class="shadow-md !p-6">
+      <mat-card-header class="!p-0">
+        <div class="flex justify-between items-center w-full mb-4">
+          <mat-card-title>Comparativa General</mat-card-title>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="overflow-x-auto !p-0">
+        <table mat-table [dataSource]="combinedRates" class="w-full !bg-transparent">
+          <ng-container matColumnDef="exchange">
+            <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50">Exchange</th>
+            <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3">{{ element.exchange }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="eldorado_rate">
-          <th mat-header-cell *matHeaderCellDef>Eldorado</th>
-          <td mat-cell *matCellDef="let element">{{element.eldorado_rate}}</td>
-        </ng-container>
+          <ng-container matColumnDef="exchange_rate">
+            <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50">Tasa Exchange</th>
+            <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3">
+              {{ element.exchange_rate | number : "1.2-2" }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="syklo_rate">
-          <th mat-header-cell *matHeaderCellDef>Syklo</th>
-          <td mat-cell *matCellDef="let element">{{element.syklo_rate}}</td>
-        </ng-container>
+          <ng-container matColumnDef="monitor_rate">
+            <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50">Tasa Monitor</th>
+            <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3">
+              {{ element.monitor_rate | number : "1.2-2" }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="yadio_rate">
-          <th mat-header-cell *matHeaderCellDef>Yadio</th>
-          <td mat-cell *matCellDef="let element">{{element.yadio_rate}}</td>
-        </ng-container>
+          <ng-container matColumnDef="diferencia">
+            <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50">Diferencia VES</th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              [ngClass]="{
+                'text-emerald-500': element.diferencia > 0,
+                'text-rose-500': element.diferencia < 0,
+                'text-gray-500': element.diferencia === 0
+              }"
+              class="py-3 !border-gray-300"
+            >
+            <b class="font-extrabold text-base">{{ element.diferencia > 0 ? "▲" : (element.diferencia < 0 ? "▼" : "=") }}</b>
+              {{ element.diferencia | number : "1.2-2" }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="total_rate">
-          <th mat-header-cell *matHeaderCellDef>Total</th>
-          <td mat-cell *matCellDef="let element">{{element.total_rate}}</td>
-        </ng-container>
+          <ng-container matColumnDef="diferencia_porcentaje">
+            <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50">Diferencia %</th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              [ngClass]="{
+                'text-emerald-500': element.diferencia_porcentaje > 0,
+                'text-rose-500': element.diferencia_porcentaje < 0,
+                'text-gray-500': element.diferencia_porcentaje === 0
+              }"
+              class="py-3 !border-gray-300"
+            >
+             <b class="font-extrabold text-base"> {{ element.diferencia_porcentaje > 0 ? "▲" : (element.diferencia_porcentaje < 0 ? "▼" : "=") }}</b>
+              {{ element.diferencia_porcentaje | number : "1.2-2" }}%
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="created_at">
-          <th mat-header-cell *matHeaderCellDef>Fecha</th>
-          <td mat-cell *matCellDef="let element">{{element.created_at | date:'short'}}</td>
-        </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="hover:bg-gray-200 transition-colors !h-10 "
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumnsExchange"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumnsExchange;" class="!h-8"></tr>
-      </table>
-    </mat-card-content>
-  </mat-card>
+            [ngClass]="{
+              '!bg-gray-300': row.exchange === 'Total'
+            }"
+          ></tr>
+        </table>
+      </mat-card-content>
+      <div class="flex justify-between gap-2 flex-rpw mt-5 text-sm" *ngIf="combinedRates.length > 0">
+        <!-- Last update -->
+        <div class="text-gray-600">Monitor: {{ combinedRates[0].last_update_monitor.format('dddd HH:mm') }}</div>
+        <div class="text-gray-600">Exchange: {{ combinedRates[0].last_update_exchange.format('dddd HH:mm') }}</div>
+        <div class="text-gray-500 ">Diferencia: {{ combinedRates[0].tiempo_diferencia }}</div>
+      </div>
+    </mat-card>
+  </div>
 
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Monitor de Tasas</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <table mat-table [dataSource]="monitorRates" class="mat-elevation-z8">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let element">{{element.id}}</td>
-        </ng-container>
+  <!-- Tarjetas individuales -->
+  <h2 class="text-xl font-bold mb-4 text-gray-800">Detalles por Exchange</h2>
 
-        <ng-container matColumnDef="airtm_rate">
-          <th mat-header-cell *matHeaderCellDef>Airtm</th>
-          <td mat-cell *matCellDef="let element">{{element.airtm_rate}}</td>
-        </ng-container>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <mat-card *ngFor="let rate of combinedRates" class="shadow-md hover:shadow-lg transition-shadow p-4">
+      <mat-card-header class="!p-0 ">
+        <!-- background: #1f2937; -->
+        <!-- padding: 9px 14px; -->
+        <!-- border-radius: 7px; -->
+        <!-- color: white !important; -->
+        <div class="flex justify-between items-center w-full px-5 py-2 rounded-md bg-gray-700 text-white">
+          <mat-card-title class="text-lg font-bold">{{ rate.exchange }}</mat-card-title>
+          <div
+            [ngClass]="{
+              'bg-emerald-100 text-emerald-800': rate.diferencia_porcentaje > 0,
+              'bg-rose-100 text-rose-800': rate.diferencia_porcentaje < 0,
+              'bg-gray-100 text-gray-800': rate.diferencia_porcentaje === 0
+            }"
+            class="text-sm px-2 py-1 rounded-full"
+          >
+            {{ rate.diferencia_porcentaje > 0 ? "▲" : (rate.diferencia_porcentaje < 0 ? "▼" : "=") }}
+            {{ rate.diferencia_porcentaje | number : "1.2-2" }}%
+          </div>
+        </div>
+      </mat-card-header>
 
-        <ng-container matColumnDef="billeterap2p_rate">
-          <th mat-header-cell *matHeaderCellDef>Billetera P2P</th>
-          <td mat-cell *matCellDef="let element">{{element.billeterap2p_rate}}</td>
-        </ng-container>
+      <hr class="my-2">
 
-        <ng-container matColumnDef="cambiosrya_rate">
-          <th mat-header-cell *matHeaderCellDef>Cambios RYA</th>
-          <td mat-cell *matCellDef="let element">{{element.cambiosrya_rate}}</td>
-        </ng-container>
+      <mat-card-content class="!p-0 ">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Tasa Exchange:</span>
+          <span class="font-semibold">{{ rate.exchange_rate | number : "1.2-2" }}</span>
+        </div>
 
-        <ng-container matColumnDef="eldorado_rate">
-          <th mat-header-cell *matHeaderCellDef>Eldorado</th>
-          <td mat-cell *matCellDef="let element">{{element.eldorado_rate}}</td>
-        </ng-container>
+        <div class="flex justify-between mb-3">
+          <span class="text-gray-600">Tasa Monitor:</span>
+          <span class="font-semibold">{{ rate.monitor_rate | number : "1.2-2" }}</span>
+        </div>
 
-        <ng-container matColumnDef="mkfrontera_rate">
-          <th mat-header-cell *matHeaderCellDef>MK Frontera</th>
-          <td mat-cell *matCellDef="let element">{{element.mkfrontera_rate}}</td>
-        </ng-container>
+        <div class="flex justify-between mb-3">
+          <span class="text-gray-600">Diferencia:</span>
+          <span class="font-semibold"
+            [ngClass]="{
+              'text-emerald-500': rate.diferencia > 0,
+              'text-rose-500': rate.diferencia < 0
+            }">
+            {{ rate.diferencia > 0 ? "+" : "" }}{{ rate.diferencia | number : "1.2-2" }}
+          </span>
+        </div>
 
-        <ng-container matColumnDef="syklo_rate">
-          <th mat-header-cell *matHeaderCellDef>Syklo</th>
-          <td mat-cell *matCellDef="let element">{{element.syklo_rate}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="usdtbnbvzla_rate">
-          <th mat-header-cell *matHeaderCellDef>USDT BNB Vzla</th>
-          <td mat-cell *matCellDef="let element">{{element.usdtbnbvzla_rate}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="yadio_rate">
-          <th mat-header-cell *matHeaderCellDef>Yadio</th>
-          <td mat-cell *matCellDef="let element">{{element.yadio_rate}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="total_rate">
-          <th mat-header-cell *matHeaderCellDef>Total</th>
-          <td mat-cell *matCellDef="let element">{{element.total_rate}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="datetime">
-          <th mat-header-cell *matHeaderCellDef>Fecha</th>
-          <td mat-cell *matCellDef="let element">{{element.datetime | date:'short'}}</td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumnsMonitor"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumnsMonitor;"></tr>
-      </table>
-    </mat-card-content>
-  </mat-card>
+        <!-- <div class="mt-6 text-xs text-gray-500">
+          Última actualización: {{ rate.ultima_actualizacion | date : "medium" }}
+        </div> -->
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
-
