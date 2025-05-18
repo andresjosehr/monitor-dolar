@@ -9,6 +9,24 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bcv_rates: {
+        Row: {
+          bcv_rate: number | null
+          created_at: string | null
+          id: number
+        }
+        Insert: {
+          bcv_rate?: number | null
+          created_at?: string | null
+          id?: number
+        }
+        Update: {
+          bcv_rate?: number | null
+          created_at?: string | null
+          id?: number
+        }
+        Relationships: []
+      }
       exchange_rates: {
         Row: {
           binance_rate: number

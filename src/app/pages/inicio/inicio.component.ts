@@ -11,6 +11,7 @@ import 'moment/locale/es';
 
 type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
 type MonitorRate = Database['public']['Tables']['monitor_rates']['Row'];
+type BcvRate = Database['public']['Tables']['bcv_rates']['Row'];
 
 interface CombinedRate {
   exchange: string;
@@ -41,6 +42,13 @@ interface MonitorRateComparison {
   last_update: moment.Moment;
 }
 
+interface BcvRateComparison {
+  date: moment.Moment;
+  rate: number;
+  diferencia: number;
+  diferencia_porcentaje: number;
+}
+
 @Component({
   selector: 'app-inicio',
   standalone: true,
@@ -64,13 +72,16 @@ interface MonitorRateComparison {
 export class InicioComponent implements OnInit {
   exchangeRates: ExchangeRate[] = [];
   monitorRates: MonitorRate[] = [];
+  bcvRates: BcvRate[] = [];
   combinedRates: CombinedRate[] = [];
   exchangeComparisons: ExchangeRateComparison[] = [];
   monitorComparisons: MonitorRateComparison[] = [];
+  bcvComparisons: BcvRateComparison[] = [];
 
   displayedColumns: string[] = ['exchange', 'monitor_rate', 'exchange_rate', 'diferencia'];
   exchangeColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
   monitorColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
+  bcvColumns: string[] = ['date', 'rate', 'diferencia'];
 
   constructor(private supabaseService: SupabaseService) {
     moment.locale('es');
@@ -79,9 +90,11 @@ export class InicioComponent implements OnInit {
   async ngOnInit() {
     await this.loadExchangeRates();
     await this.loadMonitorRates();
+    await this.loadBcvRates();
     this.combineRates();
     this.processExchangeRates();
     this.processMonitorRates();
+    this.processBcvRates();
   }
 
   async loadExchangeRates() {
@@ -112,6 +125,21 @@ export class InicioComponent implements OnInit {
     }
 
     this.monitorRates = data || [];
+  }
+
+  async loadBcvRates() {
+    const { data, error } = await this.supabaseService.getClient()
+      .from('bcv_rates')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (error) {
+      console.error('Error cargando bcv rates:', error);
+      return;
+    }
+
+    this.bcvRates = data || [];
   }
 
   private calculateDifference(current: number, previous: number) {
@@ -175,6 +203,22 @@ export class InicioComponent implements OnInit {
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Eldorado'),
 
     ];
+  }
+
+  private processBcvRates() {
+    if (this.bcvRates.length < 2) return;
+
+    this.bcvComparisons = this.bcvRates.map((rate, index) => {
+      const previousRate = index < this.bcvRates.length - 1 ? this.bcvRates[index + 1] : null;
+      return {
+        date: moment(rate.created_at),
+        rate: rate.bcv_rate || 0,
+        ...this.calculateDifference(
+          rate.bcv_rate || 0,
+          previousRate?.bcv_rate || rate.bcv_rate || 0
+        )
+      };
+    });
   }
 
   private combineRates() {
