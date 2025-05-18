@@ -57,13 +57,6 @@ const getCambiosRyaRate = async () => {
 
 };
 
-const getElDoradoRate = async () => {
-  const response = await axios.get("https://api-testnet.eldorado.io/api/prices");
-  // console.log(response.data);
-  const price = response['data']['BUY']['FIAT-VES']['TRON-USDT']['fiat']['max'];
-
-  return price;
-}
 
 
 
@@ -91,16 +84,8 @@ const getBCVRate = async () => {
 
 
 
-
-(async () => {
-  // const yadioRate = await getYadioRate();
-  // console.log('yadioRate', yadioRate);
-
-  // const cambiosRyaRate = await getCambiosRyaRate();
-  // console.log('cambiosRyaRate', cambiosRyaRate);
-
-  const elDoradoRate = await getElDoradoRate();
-  console.log('getElDoradoRate', elDoradoRate);
-
-
-})();
+module.exports = {
+  getYadioRate,
+  getCambiosRyaRate,
+  getBCVRate
+};

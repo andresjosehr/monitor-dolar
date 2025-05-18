@@ -1,8 +1,8 @@
-const puppeteer = require("puppeteer");
-
 // ——— SELECTORES —————————————————————————————————————————————————————————————————————————————
 const URL_P2P = "https://p2p.binance.com/es";
 const SELECTORS = {
+
+  // Filters
   sellTab: ".bn-tab-list__segment-outline #bn-tab-1",
   currencyToggle: ".bn-textField-suffix .bn-select-field.data-single",
   currencyOptions: ".bn-select-option.icon",
@@ -29,7 +29,7 @@ async function waitForMinimumCount(page, selector, minCount, timeout = 10_000) {
     const count = (await page.$$(selector)).length;
     if (count >= minCount) return;
     await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log(`Esperando ${selector} (${count}/${minCount})...`);
+    // console.log(`Esperando ${selector} (${count}/${minCount})...`);
   }
   throw new Error(
     `Se excedió timeout esperando al menos ${minCount} elementos para ${selector}`
@@ -60,7 +60,7 @@ async function selectOptionByText(
 /**
  * Extrae datos de un row de oferta.
  */
-async function parseOffer(row, amount) {
+async function parseOffers(row, amount) {
   // ✅ Extraer sólo el texto del nodo de precio más inmediato
   const rawPrice = await row.$eval(SELECTORS.offerPrice, (el) => {
     // Si el elemento tiene varios hijos (p. ej. etiquetas <span>),
@@ -94,90 +94,10 @@ async function parseOffer(row, amount) {
   return { price, completionRate, reviews, time, ordersNumber, usdtToSell };
 }
 
-// ——— FLUJO PRINCIPAL ——————————————————————————————————————————————————————————————————————
-async function getBinanceRate(amount) {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
-
-  try {
-    // 1. Navegar y esperar carga completa
-    await page.goto(URL_P2P, { waitUntil: "networkidle2" });
-    await page.waitForFunction(() => document.readyState === "complete");
-
-    // 2. Seleccionar pestaña C2C
-    await page.click(SELECTORS.sellTab);
-
-    // 3. Elegir moneda VES
-    await selectOptionByText(
-      page,
-      SELECTORS.currencyToggle,
-      SELECTORS.currencyOptions,
-      "VES"
-    );
-
-    // 4. Introducir cantidad
-    await page.type(SELECTORS.amountInput, amount.toString());
-
-    // Esperar a que aparezcan al menos 3 opciones de pago
-    // click en el toggle de opciones de pago
-    await page.click(SELECTORS.paymentToggle);
-
-    await waitForMinimumCount(page, SELECTORS.paymentOptions, 3);
-
-    // 5. Seleccionar método(es) de pago: Banesco o “Transferencia con banco especí...”
-    await selectOptionByText(
-      page,
-      SELECTORS.paymentToggle,
-      SELECTORS.paymentOptions,
-      "Banesco"
-    );
-
-    await selectOptionByText(
-      page,
-      SELECTORS.paymentToggle,
-      SELECTORS.paymentOptions,
-      "Transferencia Bancaria"
-    );
-
-    // Wait 1 second to let the page load
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // 6. Esperar que aparezcan al menos 3 ofertas
-    await waitForMinimumCount(page, SELECTORS.offerRows, 3);
-
-    // 7. Extraer datos de cada oferta
-    const rows = await page.$$(SELECTORS.offerRows);
-    const offers = await Promise.all(rows.map(i => parseOffer(i, amount)));
-
-    // Order by usdtToSell, time, compleetionRate, reviews
-    offers.sort((a, b) => {
-      if (a.time !== b.time) {
-        return a.time - b.time;
-      }
-      if (a.usdtToSell !== b.usdtToSell) {
-        return a.usdtToSell - b.usdtToSell;
-      }
-
-      if (a.completionRate !== b.completionRate) {
-        return a.completionRate - b.completionRate;
-      }
-      return a.reviews - b.reviews;
-    });
-
-    return offers;
-  } finally {
-    await browser.close();
-  }
-}
-
-// Obtener argumentos de la línea de comandos
-const amount = process.argv[2];
-
-(async () => {
-  if (!amount) {
-    amount = 0;
-  }
-
-  const elDoradoRate = await getBinanceRate(amount);
-  console.log("getElDoradoRate", elDoradoRate);
-})();
+module.exports = {
+  URL_P2P,
+  SELECTORS,
+  waitForMinimumCount,
+  selectOptionByText,
+  parseOffers
+};
