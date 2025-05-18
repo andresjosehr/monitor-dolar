@@ -1,0 +1,116 @@
+<div class="container">
+  <mat-card class="mb-4">
+    <mat-card-header>
+      <mat-card-title>Tasas de Cambio</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="exchangeRates" class="mat-elevation-z8">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let element">{{element.id}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="binance_rate">
+          <th mat-header-cell *matHeaderCellDef>Binance</th>
+          <td mat-cell *matCellDef="let element">{{element.binance_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="eldorado_rate">
+          <th mat-header-cell *matHeaderCellDef>Eldorado</th>
+          <td mat-cell *matCellDef="let element">{{element.eldorado_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="syklo_rate">
+          <th mat-header-cell *matHeaderCellDef>Syklo</th>
+          <td mat-cell *matCellDef="let element">{{element.syklo_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="yadio_rate">
+          <th mat-header-cell *matHeaderCellDef>Yadio</th>
+          <td mat-cell *matCellDef="let element">{{element.yadio_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_rate">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let element">{{element.total_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let element">{{element.created_at | date:'short'}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsExchange"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsExchange;" class="!h-8"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Monitor de Tasas</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="monitorRates" class="mat-elevation-z8">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let element">{{element.id}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="airtm_rate">
+          <th mat-header-cell *matHeaderCellDef>Airtm</th>
+          <td mat-cell *matCellDef="let element">{{element.airtm_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="billeterap2p_rate">
+          <th mat-header-cell *matHeaderCellDef>Billetera P2P</th>
+          <td mat-cell *matCellDef="let element">{{element.billeterap2p_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="cambiosrya_rate">
+          <th mat-header-cell *matHeaderCellDef>Cambios RYA</th>
+          <td mat-cell *matCellDef="let element">{{element.cambiosrya_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="eldorado_rate">
+          <th mat-header-cell *matHeaderCellDef>Eldorado</th>
+          <td mat-cell *matCellDef="let element">{{element.eldorado_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="mkfrontera_rate">
+          <th mat-header-cell *matHeaderCellDef>MK Frontera</th>
+          <td mat-cell *matCellDef="let element">{{element.mkfrontera_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="syklo_rate">
+          <th mat-header-cell *matHeaderCellDef>Syklo</th>
+          <td mat-cell *matCellDef="let element">{{element.syklo_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="usdtbnbvzla_rate">
+          <th mat-header-cell *matHeaderCellDef>USDT BNB Vzla</th>
+          <td mat-cell *matCellDef="let element">{{element.usdtbnbvzla_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="yadio_rate">
+          <th mat-header-cell *matHeaderCellDef>Yadio</th>
+          <td mat-cell *matCellDef="let element">{{element.yadio_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_rate">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let element">{{element.total_rate}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="datetime">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let element">{{element.datetime | date:'short'}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsMonitor"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsMonitor;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>
+

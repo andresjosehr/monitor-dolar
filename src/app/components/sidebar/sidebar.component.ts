@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -11,8 +11,10 @@ import { CommonModule } from '@angular/common';
 })
 export class SidebarComponent {
   isSidebarOpen = true;
+  @Output() toggleSidebarEvent = new EventEmitter<void>();
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+    this.toggleSidebarEvent.emit();
   }
 }

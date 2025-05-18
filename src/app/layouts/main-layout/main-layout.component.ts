@@ -8,12 +8,20 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   imports: [RouterOutlet, SidebarComponent],
   template: `
     <div class="flex h-screen bg-gray-100">
-      <app-sidebar class="w-64 bg-white shadow-lg"></app-sidebar>
-      <main class="flex-1 overflow-y-auto p-8">
+      <div [class.translate-x-0]="isSidebarOpen" [class.-translate-x-full]="!isSidebarOpen" class="transition-transform duration-300 ease-in-out">
+        <app-sidebar (toggleSidebarEvent)="toggleSidebar()"></app-sidebar>
+      </div>
+      <main [class.ml-72]="isSidebarOpen" class="flex-1 overflow-y-auto p-8 transition-all duration-300 ease-in-out">
         <router-outlet></router-outlet>
       </main>
     </div>
   `,
   styles: []
 })
-export class MainLayoutComponent {}
+export class MainLayoutComponent {
+  isSidebarOpen = true;
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+}
