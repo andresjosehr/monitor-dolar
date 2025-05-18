@@ -1,12 +1,16 @@
-const supabase = require('../config/supabase');
+const supabase = require('../../config/supabase');
 
-class ExchangeRates {
+class MonitorRates {
     /**
      * Inserta un nuevo registro de tasas de cambio
      * @param {Object} rates - Objeto con las tasas de cambio
-     * @param {number} rates.binance_rate - Tasa de Binance
+     * @param {number} rates.airtm_rate - Tasa de Airtm
+     * @param {number} rates.billeterap2p_rate - Tasa de BilleteraP2P
+     * @param {number} rates.cambiosrya_rate - Tasa de CambiosRya
      * @param {number} rates.eldorado_rate - Tasa de Eldorado
+     * @param {number} rates.mkfrontera_rate - Tasa de MKFrontera
      * @param {number} rates.syklo_rate - Tasa de Syklo
+     * @param {number} rates.usdtbnbvzla_rate - Tasa de USDTBNBVzla
      * @param {number} rates.yadio_rate - Tasa de Yadio
      * @param {Date} [rates.datetime] - Fecha y hora del registro (opcional)
      * @returns {Promise<Object>} - Resultado de la inserción
@@ -14,18 +18,26 @@ class ExchangeRates {
     static async insertRates(rates) {
         // Calcular el total_rate (promedio de todas las tasas)
         const total_rate = (
-            parseFloat(rates.binance_rate) +
+            parseFloat(rates.airtm_rate) +
+            parseFloat(rates.billeterap2p_rate) +
+            parseFloat(rates.cambiosrya_rate) +
             parseFloat(rates.eldorado_rate) +
+            parseFloat(rates.mkfrontera_rate) +
             parseFloat(rates.syklo_rate) +
+            parseFloat(rates.usdtbnbvzla_rate) +
             parseFloat(rates.yadio_rate)
-        ) / 4;
+        ) / 8;
 
         const { data, error } = await supabase
-            .from('exchange_rates')
+            .from('monitor_rates')
             .insert([{
-                binance_rate: parseFloat(rates.binance_rate.toFixed(2)),
+                airtm_rate: parseFloat(rates.airtm_rate.toFixed(2)),
+                billeterap2p_rate: parseFloat(rates.billeterap2p_rate.toFixed(2)),
+                cambiosrya_rate: parseFloat(rates.cambiosrya_rate.toFixed(2)),
                 eldorado_rate: parseFloat(rates.eldorado_rate.toFixed(2)),
+                mkfrontera_rate: parseFloat(rates.mkfrontera_rate.toFixed(2)),
                 syklo_rate: parseFloat(rates.syklo_rate.toFixed(2)),
+                usdtbnbvzla_rate: parseFloat(rates.usdtbnbvzla_rate.toFixed(2)),
                 yadio_rate: parseFloat(rates.yadio_rate.toFixed(2)),
                 total_rate: parseFloat(total_rate.toFixed(2)),
                 datetime: rates.datetime ? new Date(rates.datetime).toISOString() : new Date().toISOString()
@@ -43,7 +55,7 @@ class ExchangeRates {
      */
     static async getLatestRates(limit = 1) {
         const { data, error } = await supabase
-            .from('exchange_rates')
+            .from('monitor_rates')
             .select('*')
             .order('datetime', { ascending: false })
             .limit(limit);
@@ -60,7 +72,7 @@ class ExchangeRates {
      */
     static async getRatesByDateRange(startDate, endDate) {
         const { data, error } = await supabase
-            .from('exchange_rates')
+            .from('monitor_rates')
             .select('*')
             .gte('datetime', startDate.toISOString())
             .lte('datetime', endDate.toISOString())
@@ -71,4 +83,4 @@ class ExchangeRates {
     }
 }
 
-module.exports = ExchangeRates;
+module.exports = MonitorRates;
