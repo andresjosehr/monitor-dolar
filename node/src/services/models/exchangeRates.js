@@ -8,27 +8,18 @@ class ExchangeRates {
      * @param {number} rates.eldorado_rate - Tasa de Eldorado
      * @param {number} rates.syklo_rate - Tasa de Syklo
      * @param {number} rates.yadio_rate - Tasa de Yadio
-     * @param {Date} [rates.datetime] - Fecha y hora del registro (opcional)
      * @returns {Promise<Object>} - Resultado de la inserción
      */
     static async insertRates(rates) {
-        // Calcular el total_rate (promedio de todas las tasas)
-        const total_rate = (
-            parseFloat(rates.binance_rate) +
-            parseFloat(rates.eldorado_rate) +
-            parseFloat(rates.syklo_rate) +
-            parseFloat(rates.yadio_rate)
-        ) / 4;
 
         const { data, error } = await supabase
             .from('exchange_rates')
             .insert([{
-                binance_rate: parseFloat(rates.binance_rate.toFixed(2)),
-                eldorado_rate: parseFloat(rates.eldorado_rate.toFixed(2)),
-                syklo_rate: parseFloat(rates.syklo_rate.toFixed(2)),
-                yadio_rate: parseFloat(rates.yadio_rate.toFixed(2)),
-                total_rate: parseFloat(total_rate.toFixed(2)),
-                datetime: rates.datetime ? new Date(rates.datetime).toISOString() : new Date().toISOString()
+                binance_rate : parseFloat(rates.binance_rate),
+                eldorado_rate: parseFloat(rates.eldorado_rate),
+                syklo_rate   : parseFloat(rates.syklo_rate),
+                yadio_rate   : parseFloat(rates.yadio_rate),
+                total_rate   : parseFloat(rates.total_rate),
             }])
             .select();
 
@@ -45,7 +36,7 @@ class ExchangeRates {
         const { data, error } = await supabase
             .from('exchange_rates')
             .select('*')
-            .order('datetime', { ascending: false })
+            .order('created_at', { ascending: false })
             .limit(limit);
 
         if (error) throw error;
@@ -62,9 +53,9 @@ class ExchangeRates {
         const { data, error } = await supabase
             .from('exchange_rates')
             .select('*')
-            .gte('datetime', startDate.toISOString())
-            .lte('datetime', endDate.toISOString())
-            .order('datetime', { ascending: true });
+            .gte('created_at', startDate.toISOString())
+            .lte('created_at', endDate.toISOString())
+            .order('created_at', { ascending: true });
 
         if (error) throw error;
         return data;

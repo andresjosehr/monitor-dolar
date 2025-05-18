@@ -31,16 +31,16 @@ class MonitorRates {
         const { data, error } = await supabase
             .from('monitor_rates')
             .insert([{
-                airtm_rate: parseFloat(rates.airtm_rate.toFixed(2)),
+                airtm_rate       : parseFloat(rates.airtm_rate.toFixed(2)),
                 billeterap2p_rate: parseFloat(rates.billeterap2p_rate.toFixed(2)),
-                cambiosrya_rate: parseFloat(rates.cambiosrya_rate.toFixed(2)),
-                eldorado_rate: parseFloat(rates.eldorado_rate.toFixed(2)),
-                mkfrontera_rate: parseFloat(rates.mkfrontera_rate.toFixed(2)),
-                syklo_rate: parseFloat(rates.syklo_rate.toFixed(2)),
-                usdtbnbvzla_rate: parseFloat(rates.usdtbnbvzla_rate.toFixed(2)),
-                yadio_rate: parseFloat(rates.yadio_rate.toFixed(2)),
-                total_rate: parseFloat(total_rate.toFixed(2)),
-                datetime: rates.datetime ? new Date(rates.datetime).toISOString() : new Date().toISOString()
+                cambiosrya_rate  : parseFloat(rates.cambiosrya_rate.toFixed(2)),
+                eldorado_rate    : parseFloat(rates.eldorado_rate.toFixed(2)),
+                mkfrontera_rate  : parseFloat(rates.mkfrontera_rate.toFixed(2)),
+                syklo_rate       : parseFloat(rates.syklo_rate.toFixed(2)),
+                usdtbnbvzla_rate : parseFloat(rates.usdtbnbvzla_rate.toFixed(2)),
+                yadio_rate       : parseFloat(rates.yadio_rate.toFixed(2)),
+                total_rate       : parseFloat(total_rate.toFixed(2)),
+                datetime         : rates.datetime ? new Date(rates.datetime).toISOString(): new Date().toISOString()
             }])
             .select();
 
