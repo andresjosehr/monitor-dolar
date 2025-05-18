@@ -7,7 +7,7 @@
     <div class="w-full">
       <mat-card class="min-h-full shadow-md !p-4 md:!p-6">
 
-        <mat-card-header class="!p-0">
+        <mat-card-header class="!p-0" *ngIf="combinedRates.length > 0">
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title class="text-sm md:text-">
               <div>Comparativa</div>
@@ -89,7 +89,7 @@
     <!-- Monitor Rates -->
     <div class="w-full">
       <mat-card class="min-h-full shadow-md !p-4 md:!p-6">
-        <mat-card-header class="!p-0">
+        <mat-card-header class="!p-0" *ngIf="combinedRates.length > 0">
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title>
               <div>Monitor Rates</div>
@@ -166,7 +166,7 @@
     <div class="w-full">
       <mat-card class="min-h-full shadow-md !p-4 md:!p-6">
 
-        <mat-card-header class="!p-0">
+        <mat-card-header class="!p-0" *ngIf="combinedRates.length > 0">
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title>
               <div>Exchange Rates</div>
@@ -242,7 +242,7 @@
     <!-- BCV Rates -->
     <div class="w-full">
       <mat-card class="min-h-full shadow-md !p-4 md:!p-6">
-        <mat-card-header class="!p-0">
+        <mat-card-header class="!p-0" *ngIf="bcvComparisons.length > 0">
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title>
               <div>BCV Rates</div>
@@ -307,5 +307,9 @@
     </div>
   </div>
 
+  <!-- Gráfico Comparativo -->
+  <div class="mt-6">
+    <app-price-chart></app-price-chart>
+  </div>
 
 </div>

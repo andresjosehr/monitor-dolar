@@ -1,0 +1,56 @@
+<mat-card class="shadow-md !p-4 md:!p-6">
+  <mat-card-header class="!p-0">
+    <div class="flex justify-between items-start w-full mb-4">
+      <mat-card-title>Gráfico Comparativo de Tasas</mat-card-title>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content class="!p-0">
+    <!-- Selector de rango de fechas -->
+    <app-date-range-selector (dateRangeChanged)="onDateRangeChanged($event)"></app-date-range-selector>
+
+    <!-- Opciones de configuración -->
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <mat-form-field appearance="outline" class="w-32">
+          <mat-label>Tema</mat-label>
+          <mat-select [(ngModel)]="settings.theme" (selectionChange)="updateChartSettings()">
+            <mat-option *ngFor="let option of themeOptions" [value]="option.value">
+              {{option.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-32">
+          <mat-label>Unidad</mat-label>
+          <mat-select [(ngModel)]="settings.timeUnit" (selectionChange)="loadChartData()">
+            <mat-option *ngFor="let option of timeUnitOptions" [value]="option.value">
+              {{option.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <mat-slide-toggle
+          [(ngModel)]="settings.showMonitor"
+          (change)="updateChartSettings()"
+          color="primary">
+          Monitor
+        </mat-slide-toggle>
+
+        <mat-slide-toggle
+          [(ngModel)]="settings.showExchange"
+          (change)="updateChartSettings()"
+          color="warn">
+          Exchange
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <!-- Contenedor del gráfico -->
+    <div class="w-full" style="height: 400px;">
+      <div #chartContainer class="w-full h-full"></div>
+    </div>
+  </mat-card-content>
+</mat-card>

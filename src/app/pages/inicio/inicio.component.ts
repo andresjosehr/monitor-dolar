@@ -8,6 +8,7 @@ import { Database } from '../../core/interfaces/supabase.types';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import moment from 'moment';
 import 'moment/locale/es';
+import { PriceChartComponent } from '../../chart/price-chart/price-chart.component';
 
 type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
 type MonitorRate = Database['public']['Tables']['monitor_rates']['Row'];
@@ -59,7 +60,8 @@ interface BcvRateComparison {
     MatIconModule,
     CommonModule,
     DatePipe,
-    DecimalPipe
+    DecimalPipe,
+    PriceChartComponent
   ],
   styles: [
     `
