@@ -52,6 +52,13 @@ interface MonitorRateComparison {
     CommonModule,
     DatePipe,
     DecimalPipe
+  ],
+  styles: [
+    `
+    .mdc-data-table__cell, .mdc-data-table__header-cell {
+    padding: 0 7px;
+}
+    `
   ]
 })
 export class InicioComponent implements OnInit {
@@ -61,9 +68,9 @@ export class InicioComponent implements OnInit {
   exchangeComparisons: ExchangeRateComparison[] = [];
   monitorComparisons: MonitorRateComparison[] = [];
 
-  displayedColumns: string[] = ['exchange', 'exchange_rate', 'monitor_rate', 'diferencia'];
-  exchangeColumns: string[] = ['exchange', 'current_rate', 'previous_rate', 'diferencia'];
-  monitorColumns: string[] = ['exchange', 'current_rate', 'previous_rate', 'diferencia'];
+  displayedColumns: string[] = ['exchange', 'monitor_rate', 'exchange_rate', 'diferencia'];
+  exchangeColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
+  monitorColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
 
   constructor(private supabaseService: SupabaseService) {
     moment.locale('es');

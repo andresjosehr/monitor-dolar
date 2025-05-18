@@ -11,7 +11,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
       <div [class.translate-x-0]="isSidebarOpen" [class.-translate-x-full]="!isSidebarOpen" class="transition-transform duration-300 ease-in-out">
         <app-sidebar (toggleSidebarEvent)="toggleSidebar()"></app-sidebar>
       </div>
-      <main [class.ml-72]="isSidebarOpen" class="flex-1 overflow-y-auto p-8 transition-all duration-300 ease-in-out">
+      <main [class.ml-72]="isSidebarOpen" class="flex-1 overflow-y-auto p-3 transition-all duration-300 ease-in-out">
         <router-outlet></router-outlet>
       </main>
     </div>
