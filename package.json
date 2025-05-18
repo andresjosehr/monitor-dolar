@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "supabase-types": "npx supabase gen types typescript --project-id jdfkckuzxofrecysgdhm --schema public > src/app/core/interfaces/supabase.types.ts"
+    "supabase-types": "npx supabase gen types typescript --project-id jdfkckuzxofrecysgdhm --schema public > src/app/core/interfaces/supabase.types.ts",
+    "deploy": "ng build --configuration=production --base-href=/monitor-dolar/ && npx angular-cli-ghpages --dir=dist/monitor-dolar/browser"
   },
   "private": true,
   "dependencies": {
@@ -42,6 +43,7 @@
     "@angular/cli": "^18.0.5",
     "@angular/compiler-cli": "^18.0.0",
     "@types/jasmine": "~5.1.0",
+    "angular-cli-ghpages": "^2.0.3",
     "autoprefixer": "^10.4.21",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",

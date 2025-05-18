@@ -11,7 +11,7 @@
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title class="text-sm md:text-">
               <div>Comparativa</div>
-              <div class="text-sm md:text-sm">Diferencia: {{ combinedRates[0].tiempo_diferencia }}</div>
+              <div class="text-sm md:text-sm text-gray-500">Diferencia: {{ combinedRates[0].tiempo_diferencia }}</div>
             </mat-card-title>
 
             <div class="text-base">
@@ -93,11 +93,21 @@
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title>
               <div>Monitor Rates</div>
-              <div class="text-sm md:text-sm">{{monitorComparisons[0].last_update.format('dddd HH:mm')}}</div>
+              <div class="text-sm md:text-sm capitalize text-gray-500">{{monitorComparisons[0].last_update.format('dddd HH:mm')}}</div>
             </mat-card-title>
-            <div class="text-base">
-              <div class="font-bold py-2 px-3 rounded-md bg-blue-950 text-white">
-                Bs. {{monitorComparisons[0].current_rate | number : "1.2-2"}}
+
+            <div class="py-2 px-3 rounded-md bg-blue-950 text-center">
+              <div class="font-bold text-white text-lg"> Bs. {{monitorComparisons[0].current_rate | number : "1.2-2"}}</div>
+              <div
+                  [ngClass]="{
+                    'text-emerald-500': monitorComparisons[0].diferencia > 0,
+                    'text-rose-500': monitorComparisons[0].diferencia < 0,
+                    'text-gray-500': monitorComparisons[0].diferencia === 0
+                  }"
+                  class="text-xs font-light">
+                    <b style="white-space: nowrap;">{{ monitorComparisons[0].diferencia > 0 ? "▲" : (monitorComparisons[0].diferencia < 0 ? "▼" : "=") }}
+                      {{ monitorComparisons[0].diferencia | number : "1.2-2" }} / {{ monitorComparisons[0].diferencia_porcentaje | number : "1.2-2" }}%
+                    </b>
               </div>
             </div>
           </div>
@@ -163,11 +173,20 @@
           <div class="flex justify-between items-start w-full mb-4">
             <mat-card-title>
               <div>Exchange Rates</div>
-              <div class="text-sm md:text-sm">{{exchangeComparisons[0].last_update.format('dddd HH:mm')}}</div>
+              <div class="text-sm md:text-sm capitalize text-gray-500">{{exchangeComparisons[0].last_update.format('dddd HH:mm')}}</div>
             </mat-card-title>
-            <div class="text-base">
-              <div class="font-bold py-2 px-3 rounded-md bg-blue-950 text-white">
-                Bs. {{exchangeComparisons[0].current_rate | number : "1.2-2"}}
+            <div class="py-2 px-3 rounded-md bg-blue-950 text-center">
+              <div class="font-bold text-white text-lg"> Bs. {{exchangeComparisons[0].current_rate | number : "1.2-2"}}</div>
+              <div
+                  [ngClass]="{
+                    'text-emerald-500': exchangeComparisons[0].diferencia > 0,
+                    'text-rose-500': exchangeComparisons[0].diferencia < 0,
+                    'text-gray-500': exchangeComparisons[0].diferencia === 0
+                  }"
+                  class="text-xs font-light">
+                    <b style="white-space: nowrap;">{{ exchangeComparisons[0].diferencia > 0 ? "▲" : (exchangeComparisons[0].diferencia < 0 ? "▼" : "=") }}
+                      {{ exchangeComparisons[0].diferencia | number : "1.2-2" }} / {{ exchangeComparisons[0].diferencia_porcentaje | number : "1.2-2" }}%
+                    </b>
               </div>
             </div>
           </div>

@@ -172,4 +172,22 @@ program
 
 
 
+  program
+  .command("insertBcvRate")
+  .description("")
+  .action(async () => {
+    try {
+      const rates = await bcvService.insertBcvRate();
+      console.log('Tasa BCV guardada');
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  });
+
+
+
+
+
+
+
 program.parse(process.argv);
