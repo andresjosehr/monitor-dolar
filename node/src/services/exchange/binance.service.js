@@ -1,20 +1,6 @@
-const puppeteer = require("puppeteer");
 const axios = require("axios");
 
 class BinanceService {
-    constructor() {
-        this.URL_P2P = "https://p2p.binance.com/en/trade/Tether/USDT?fiat=VES";
-        this.SELECTORS = {
-            sellTab: '[data-bn-type="text"][class*="css-"]',
-            currencyToggle: '[data-bn-type="text"][class*="css-"]',
-            currencyOptions: '[class*="css-"]',
-            amountInput: '[class*="css-"]',
-            paymentToggle: '[class*="css-"]',
-            paymentOptions: '[class*="css-"]',
-            offerRows: '[class*="css-"]'
-        };
-    }
-
     async getOffersApi(amount, operation = "SELL", payTypes = ["BANK", "Banesco", "Mercantil"]) {
         try {
             const response = await axios.post(

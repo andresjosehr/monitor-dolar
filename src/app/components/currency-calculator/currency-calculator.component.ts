@@ -4,47 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {MatTabsModule} from '@angular/material/tabs';
+import { BinanceService } from '../../services/binance.service';
 
 @Component({
   selector: 'app-currency-calculator',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
+    CommonModule,
     MatCardModule,
+    MatTabsModule,
+    MatInputModule,
     MatFormFieldModule,
-    MatInputModule
   ],
-  template: `
-    <mat-card class="!px-3 !py-2">
-      <mat-card-header class="justify-center">
-        <mat-card-title class='!mb-5'>Calculadora de Divisas</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="calculator-form !p-0">
-          <mat-form-field appearance="fill">
-            <mat-label>Monto en Bs</mat-label>
-            <input matInput type="text" [(ngModel)]="displayBsAmount" (input)="onBsInput($event)" (blur)="onBsBlur()">
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Monitor Dólar ({{ monitorRate | number:'1.2-2' }} Bs)</mat-label>
-            <input matInput type="text" [(ngModel)]="displayMonitorAmount" (input)="onMonitorInput($event)" (blur)="onMonitorBlur()">
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>BCV ({{ bcvRate | number:'1.2-2' }} Bs)</mat-label>
-            <input matInput type="text" [(ngModel)]="displayBcvAmount" (input)="onBcvInput($event)" (blur)="onBcvBlur()">
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Promedio Dólar ({{ averageRate | number:'1.2-2' }} Bs)</mat-label>
-            <input matInput type="text" [(ngModel)]="displayAverageAmount" (input)="onAverageInput($event)" (blur)="onAverageBlur()">
-          </mat-form-field>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  `,
+  templateUrl: './currency-calculator.component.html',
   styles: [
     `
     .calculator-form {
@@ -70,12 +44,19 @@ export class CurrencyCalculatorComponent implements OnInit {
   monitorAmount: number | null = null;
   bcvAmount: number | null = null;
   averageAmount: number | null = null;
+  btb_bcvAmount: number | null = null;
+  btb_binanceAmount: number | null = null;
 
   // Valores para mostrar en los inputs
   displayBsAmount: string = '';
   displayMonitorAmount: string = '';
   displayBcvAmount: string = '';
   displayAverageAmount: string = '';
+
+  btb_displayBcvAmount: string = '';
+  btb_displayBinanceAmount: string = '';
+
+  constructor(private binanceService: BinanceService) {}
 
   ngOnInit() {
 
@@ -249,6 +230,35 @@ export class CurrencyCalculatorComponent implements OnInit {
     }
 
     this.updateOtherAmounts('bcv');
+  }
+
+  async btb_onBcvInput(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    const cursorPosition = inputElement.selectionStart;
+    const inputValue = parseFloat(inputElement.value);
+
+    const vesValue = inputValue * this.bcvRate;
+
+
+
+    const prices = await this.binanceService.getOffersApi(vesValue);
+    const priceBinance = prices[0].price;
+
+    const binanceAmount = parseFloat((vesValue / priceBinance).toFixed(2));
+
+    this.btb_displayBinanceAmount = this.formatNumber(binanceAmount);
+  }
+
+  onBinanceBlur() {
+    if (this.btb_displayBinanceAmount !== null) {
+      this.btb_displayBinanceAmount = this.formatNumber(Number(this.btb_displayBinanceAmount));
+    }
+  }
+
+  btb_onBinanceInput(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    const cursorPosition = inputElement.selectionStart;
+    const inputValue = inputElement.value
   }
 
   onBcvBlur() {

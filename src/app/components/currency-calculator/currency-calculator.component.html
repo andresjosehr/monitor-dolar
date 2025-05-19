@@ -1,0 +1,47 @@
+<mat-card class="!px-3 !py-2">
+  <mat-card-header class="justify-center">
+    <mat-card-title class='!mb-5'>Calculadora de Divisas</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+      <mat-tab label="General">
+        <div class="calculator-form !p-0 mt-5">
+          <mat-form-field appearance="fill">
+            <mat-label>Monto en Bs</mat-label>
+            <input matInput type="text" [(ngModel)]="displayBsAmount" (input)="onBsInput($event)" (blur)="onBsBlur()">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Monitor Dólar ({{ monitorRate | number:'1.2-2' }} Bs)</mat-label>
+            <input matInput type="text" [(ngModel)]="displayMonitorAmount" (input)="onMonitorInput($event)" (blur)="onMonitorBlur()">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>BCV ({{ bcvRate | number:'1.2-2' }} Bs)</mat-label>
+            <input matInput type="text" [(ngModel)]="displayBcvAmount" (input)="onBcvInput($event)" (blur)="onBcvBlur()">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Promedio Dólar ({{ averageRate | number:'1.2-2' }} Bs)</mat-label>
+            <input matInput type="text" [(ngModel)]="displayAverageAmount" (input)="onAverageInput($event)" (blur)="onAverageBlur()">
+          </mat-form-field>
+        </div>
+      </mat-tab>
+      <mat-tab label="BCV - Binance">
+        <div class="calculator-form !p-0 mt-5">
+          <mat-form-field appearance="fill">
+            <mat-label>Monto en BCV</mat-label>
+            <input matInput type="text" [(ngModel)]="btb_displayBcvAmount" (input)="btb_onBcvInput($event)" (blur)="onBcvBlur()">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Monto en Binance</mat-label>
+            <input matInput type="text" [(ngModel)]="btb_displayBinanceAmount" (input)="btb_onBinanceInput($event)" (blur)="onBinanceBlur()">
+          </mat-form-field>
+
+
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>

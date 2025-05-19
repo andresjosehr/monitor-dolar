@@ -147,7 +147,6 @@ export class InicioComponent implements OnInit {
       console.error('Error cargando exchange rate cercano:', closestError);
       return;
     }
-      console.error('Error cargando exchange rate cercano:', closestError);
     // Combinamos los resultados, evitando duplicados si el más reciente es tmbién el más cercano
     this.exchangeRates = latestData && closestData ?
       latestData[0].created_at === closestData[0].created_at ?
@@ -288,11 +287,44 @@ export class InicioComponent implements OnInit {
 
     this.combinedRates = [
       {
-        exchange: 'Monitor',
+        exchange: 'Total',
         monitor_rate: monitorRate.total_rate,
         exchange_rate: exchangeRate.total_rate,
         diferencia: Number((monitorRate.total_rate - exchangeRate.total_rate).toFixed(2)),
         diferencia_porcentaje: Number((((monitorRate.total_rate - exchangeRate.total_rate) / exchangeRate.total_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff,
+        last_update_monitor: moment(monitorRate.datetime),
+        last_update_exchange: moment(exchangeRate.created_at)
+      },
+      // Eldorado
+      {
+        exchange: 'Eldorado',
+        monitor_rate: monitorRate.eldorado_rate,
+        exchange_rate: exchangeRate.eldorado_rate,
+        diferencia: Number((monitorRate.eldorado_rate - exchangeRate.eldorado_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((monitorRate.eldorado_rate - exchangeRate.eldorado_rate) / exchangeRate.eldorado_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff,
+        last_update_monitor: moment(monitorRate.datetime),
+        last_update_exchange: moment(exchangeRate.created_at)
+      },
+      // Syklo
+      {
+        exchange: 'Syklo',
+        monitor_rate: monitorRate.syklo_rate,
+        exchange_rate: exchangeRate.syklo_rate,
+        diferencia: Number((monitorRate.syklo_rate - exchangeRate.syklo_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((monitorRate.syklo_rate - exchangeRate.syklo_rate) / exchangeRate.syklo_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff,
+        last_update_monitor: moment(monitorRate.datetime),
+        last_update_exchange: moment(exchangeRate.created_at)
+      },
+      // Yadio
+      {
+        exchange: 'Yadio',
+        monitor_rate: monitorRate.yadio_rate,
+        exchange_rate: exchangeRate.yadio_rate,
+        diferencia: Number((monitorRate.yadio_rate - exchangeRate.yadio_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((monitorRate.yadio_rate - exchangeRate.yadio_rate) / exchangeRate.yadio_rate) * 100).toFixed(2)),
         tiempo_diferencia: timeDiff,
         last_update_monitor: moment(monitorRate.datetime),
         last_update_exchange: moment(exchangeRate.created_at)
