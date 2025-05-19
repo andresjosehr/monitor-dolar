@@ -73,16 +73,18 @@ class MonitorDolarService {
       }
 
       const rates = {
-        airtm_rate: monitors.airtminc.price,
+        airtm_rate       : monitors.airtminc.price,
         billeterap2p_rate: monitors.billeterap2p.price,
-        cambiosrya_rate: monitors.cambiosrya.price,
-        eldorado_rate: monitors.eldoradoio.price,
-        mkfrontera_rate: monitors.mkfrontera.price,
-        syklo_rate: monitors.syklo_app.price,
-        usdtbnbvzla_rate: monitors.usdtbnbvzla.price,
-        yadio_rate: monitors.yadio_io.price,
-        datetime: formattedDate,
+        cambiosrya_rate  : monitors.cambiosrya.price,
+        eldorado_rate    : monitors.eldoradoio.price,
+        mkfrontera_rate  : monitors.mkfrontera.price,
+        syklo_rate       : monitors.syklo_app.price,
+        usdtbnbvzla_rate : monitors.usdtbnbvzla.price,
+        yadio_rate       : monitors.yadio_io.price,
+        total_rate       : monitors.enparalelovzla.price,
+        datetime         : formattedDate,
       };
+
 
       const result = await monitorRates.insertRates(rates);
       return result;
