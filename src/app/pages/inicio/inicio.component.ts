@@ -214,9 +214,10 @@ export class InicioComponent implements OnInit {
       last_update: currentMoment
     });
 
+    console.log(current);
     this.exchangeComparisons = [
       processRate(current.total_rate, previous.total_rate, 'Total'),
-      processRate(current.eldorado_rate, previous.eldorado_rate, 'Binance'),
+      processRate(current.binance_rate, previous.binance_rate, 'Binance'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Eldorado'),
       processRate(current.syklo_rate, previous.syklo_rate, 'Syklo'),
       processRate(current.yadio_rate, previous.yadio_rate, 'Yadio'),
@@ -290,8 +291,8 @@ export class InicioComponent implements OnInit {
         exchange: 'Total',
         monitor_rate: monitorRate.total_rate,
         exchange_rate: exchangeRate.total_rate,
-        diferencia: Number((monitorRate.total_rate - exchangeRate.total_rate).toFixed(2)),
-        diferencia_porcentaje: Number((((monitorRate.total_rate - exchangeRate.total_rate) / exchangeRate.total_rate) * 100).toFixed(2)),
+        diferencia: Number((exchangeRate.total_rate - monitorRate.total_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate.total_rate - monitorRate.total_rate) / exchangeRate.total_rate) * 100).toFixed(2)),
         tiempo_diferencia: timeDiff,
         last_update_monitor: moment(monitorRate.datetime),
         last_update_exchange: moment(exchangeRate.created_at)
