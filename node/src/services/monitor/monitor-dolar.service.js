@@ -60,7 +60,7 @@ class MonitorDolarService {
       const formattedDate = moment(
         `${date} ${time}`,
         "DD/MM/YYYY hh:mm A"
-      ).toDate();
+      ).toDate() - 4 * 60 * 60 * 1000;
 
       // Verificar si ya existe un registro con la misma fecha
       const existingRates = await monitorRates.getRatesByDateRange(

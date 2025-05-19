@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "supabase-types": "npx supabase gen types typescript --project-id jdfkckuzxofrecysgdhm --schema public > src/app/core/interfaces/supabase.types.ts",
-    "deploy": "ng build --configuration=production --base-href=/monitor-dolar/ && npm run generate-pwa-assets && cpx \"src/manifest.webmanifest\" \"dist/monitor-dolar/browser/\" && npx angular-cli-ghpages --dir=dist/monitor-dolar/browser",
+    "deploy": "ng build --configuration=production --base-href=/monitor-dolar/ && npx angular-cli-ghpages --dir=dist/monitor-dolar/browser",
     "build:prod": "ng build --configuration production",
     "build:pwa": "ng build --configuration production && npm run generate-pwa-assets",
     "generate-pwa-assets": "npx pwa-asset-generator ./src/assets/icon.png ./src/assets/icons -i ./src/index.html -m ./src/manifest.webmanifest --path-override assets/icons --preset minimal"
