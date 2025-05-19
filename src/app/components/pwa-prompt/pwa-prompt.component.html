@@ -1,0 +1,20 @@
+<div class="pwa-container">
+  <!-- Prompt de Instalación PWA -->
+  <div *ngIf="showInstallPrompt" class="pwa-install-prompt">
+    <button (click)="installPwa()" class="install-button">
+      <span class="install-icon">📱</span>
+      Instalar aplicación
+    </button>
+  </div>
+
+  <!-- Prompt de Actualización PWA -->
+  <div *ngIf="showUpdatePrompt" class="pwa-update-prompt">
+    <div class="update-message">
+      <span class="update-icon">🔄</span>
+      Hay una nueva versión disponible
+    </div>
+    <button (click)="updatePwa()" class="update-button">
+      Actualizar ahora
+    </button>
+  </div>
+</div>

@@ -4,8 +4,8 @@
   <!-- Calculadora de Divisas para móvil -->
   <div class="block md:hidden w-full mb-6">
     <app-currency-calculator
-      [monitorRate]="monitorRates[0]?.total_rate || 0"
-      [bcvRate]="bcvRates[0]?.bcv_rate || 0">
+      [monitorRate]="monitorRates[0].total_rate || 0"
+      [bcvRate]="bcvRates[0].bcv_rate || 0">
     </app-currency-calculator>
   </div>
 
@@ -341,8 +341,8 @@
     <!-- Calculadora de Divisas para desktop -->
     <div class="hidden md:block w-full md:w-4/12">
       <app-currency-calculator
-        [monitorRate]="monitorRates[0]?.total_rate || 0"
-        [bcvRate]="bcvRates[0]?.bcv_rate || 0">
+        [monitorRate]="monitorRates[0].total_rate || 0"
+        [bcvRate]="bcvRates[0].bcv_rate || 0">
       </app-currency-calculator>
     </div>
 
@@ -353,3 +353,6 @@
   </div>
 
 </div>
+
+<!-- Componente PWA Prompt para instalación y actualización -->
+<app-pwa-prompt></app-pwa-prompt>

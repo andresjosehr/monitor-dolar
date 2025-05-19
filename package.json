@@ -8,7 +8,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "supabase-types": "npx supabase gen types typescript --project-id jdfkckuzxofrecysgdhm --schema public > src/app/core/interfaces/supabase.types.ts",
-    "deploy": "ng build --configuration=production --base-href=/monitor-dolar/ && npx angular-cli-ghpages --dir=dist/monitor-dolar/browser"
+    "deploy": "ng build --configuration=production --base-href=/monitor-dolar/ && npx angular-cli-ghpages --dir=dist/monitor-dolar/browser",
+    "build:prod": "ng build --configuration production",
+    "build:pwa": "ng build --configuration production && npm run generate-pwa-assets",
+    "generate-pwa-assets": "npx pwa-asset-generator ./src/assets/icon.png ./src/assets/icons -i ./src/index.html -m ./src/manifest.webmanifest --path-override assets/icons --preset minimal"
   },
   "private": true,
   "dependencies": {
@@ -22,6 +25,7 @@
     "@angular/platform-browser": "^18.0.0",
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
+    "@angular/service-worker": "^18.0.0",
     "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/moment": "^2.11.29",
@@ -53,6 +57,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.5.3",
+    "pwa-asset-generator": "^8.0.4",
     "supabase": "^2.22.12",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.4.2"

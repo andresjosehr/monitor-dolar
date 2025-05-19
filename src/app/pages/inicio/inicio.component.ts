@@ -11,6 +11,7 @@ import moment from 'moment';
 import 'moment/locale/es';
 import { PriceChartComponent } from '../../chart/price-chart/price-chart.component';
 import { CurrencyCalculatorComponent } from '../../components/currency-calculator/currency-calculator.component';
+import { PwaPromptComponent } from '../../components/pwa-prompt/pwa-prompt.component';
 
 type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
 type MonitorRate = Database['public']['Tables']['monitor_rates']['Row'];
@@ -65,7 +66,8 @@ interface BcvRateComparison {
     DatePipe,
     DecimalPipe,
     PriceChartComponent,
-    CurrencyCalculatorComponent
+    CurrencyCalculatorComponent,
+    PwaPromptComponent
   ],
   styles: [
     `
@@ -302,8 +304,8 @@ export class InicioComponent implements OnInit {
         exchange: 'Eldorado',
         monitor_rate: monitorRate.eldorado_rate,
         exchange_rate: exchangeRate.eldorado_rate,
-        diferencia: Number((monitorRate.eldorado_rate - exchangeRate.eldorado_rate).toFixed(2)),
-        diferencia_porcentaje: Number((((monitorRate.eldorado_rate - exchangeRate.eldorado_rate) / exchangeRate.eldorado_rate) * 100).toFixed(2)),
+        diferencia: Number((exchangeRate.eldorado_rate-monitorRate.eldorado_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate.eldorado_rate-monitorRate.eldorado_rate) / exchangeRate.eldorado_rate) * 100).toFixed(2)),
         tiempo_diferencia: timeDiff,
         last_update_monitor: moment(monitorRate.datetime),
         last_update_exchange: moment(exchangeRate.created_at)
@@ -313,8 +315,8 @@ export class InicioComponent implements OnInit {
         exchange: 'Syklo',
         monitor_rate: monitorRate.syklo_rate,
         exchange_rate: exchangeRate.syklo_rate,
-        diferencia: Number((monitorRate.syklo_rate - exchangeRate.syklo_rate).toFixed(2)),
-        diferencia_porcentaje: Number((((monitorRate.syklo_rate - exchangeRate.syklo_rate) / exchangeRate.syklo_rate) * 100).toFixed(2)),
+        diferencia: Number((exchangeRate.syklo_rate-monitorRate.syklo_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate.syklo_rate-monitorRate.syklo_rate) / exchangeRate.syklo_rate) * 100).toFixed(2)),
         tiempo_diferencia: timeDiff,
         last_update_monitor: moment(monitorRate.datetime),
         last_update_exchange: moment(exchangeRate.created_at)
@@ -324,8 +326,8 @@ export class InicioComponent implements OnInit {
         exchange: 'Yadio',
         monitor_rate: monitorRate.yadio_rate,
         exchange_rate: exchangeRate.yadio_rate,
-        diferencia: Number((monitorRate.yadio_rate - exchangeRate.yadio_rate).toFixed(2)),
-        diferencia_porcentaje: Number((((monitorRate.yadio_rate - exchangeRate.yadio_rate) / exchangeRate.yadio_rate) * 100).toFixed(2)),
+        diferencia: Number((exchangeRate.yadio_rate-monitorRate.yadio_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate.yadio_rate-monitorRate.yadio_rate) / exchangeRate.yadio_rate) * 100).toFixed(2)),
         tiempo_diferencia: timeDiff,
         last_update_monitor: moment(monitorRate.datetime),
         last_update_exchange: moment(exchangeRate.created_at)

@@ -18,7 +18,8 @@ import {
   UTCTimestamp,
   LineStyle,
   SeriesType,
-  LineSeries
+  LineSeries,
+  PriceLineSource
 } from 'lightweight-charts';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { DateRangeSelectorComponent, DateRange } from '../date-range-selector/date-range-selector.component';
@@ -196,7 +197,10 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       color: '#2962FF',
       lineWidth: 2,
       title: 'Monitor',
-      priceLineVisible: false,
+      priceLineVisible: true,
+      priceLineColor: '#2962FF',
+      priceLineWidth: 1,
+      priceLineStyle: LineStyle.Dashed,
       lastValueVisible: true,
     });
 
@@ -230,6 +234,15 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.monitorData.length > 0) {
       this.monitorSeries.setData(this.monitorData);
+      // Configurar la línea de precio con el último valor
+      const lastMonitorValue = this.monitorData[this.monitorData.length - 1].value;
+      this.monitorSeries.applyOptions({
+        priceLineVisible: true,
+        priceLineColor: '#2962FF',
+        priceLineWidth: 1,
+        priceLineStyle: LineStyle.Dashed,
+        priceLineSource: PriceLineSource.LastVisible,
+      });
     }
 
     if (this.exchangeData.length > 0) {
