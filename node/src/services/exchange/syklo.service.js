@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 
 class SykloService {
     constructor() {
-        this.URL_P2P = "https://explorer.syklo.io/widget#send_pms=VES:VE:PF,VES:VE:VEBN28,VES:VE:VEBN1,VES:VE:VEBN5,VES:VE:VEBN15&is_sending=false&receive_pms=USDC:ALL:SYKLO";
+        this.URL_P2P = "https://explorer.syklo.io/widget#send_pms=VES:VE:PF,VES:VE:VEBN28,VES:VE:VEBN1,VES:VE:VEBN5,VES:VE:VEBN15&receive_pms=USDC:ALL:SYKLO&is_sending=false&local_amount=100";
         this.SELECTORS = {
             usdField: "#receive-amount-input",
             vesField: "#send-amount-input",
@@ -14,7 +14,7 @@ class SykloService {
 
         while (retryCount < maxRetries) {
             const browser = await puppeteer.launch({
-              headless: true,
+              headless: false,
               args: ['--no-sandbox', '--disable-setuid-sandbox']
 
              });
