@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { Database } from '../../core/interfaces/supabase.types';
@@ -9,6 +10,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import moment from 'moment';
 import 'moment/locale/es';
 import { PriceChartComponent } from '../../chart/price-chart/price-chart.component';
+import { CurrencyCalculatorComponent } from '../../components/currency-calculator/currency-calculator.component';
 
 type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
 type MonitorRate = Database['public']['Tables']['monitor_rates']['Row'];
@@ -58,16 +60,24 @@ interface BcvRateComparison {
     MatTableModule,
     MatCardModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     CommonModule,
     DatePipe,
     DecimalPipe,
-    PriceChartComponent
+    PriceChartComponent,
+    CurrencyCalculatorComponent
   ],
   styles: [
     `
     .mdc-data-table__cell, .mdc-data-table__header-cell {
           padding: 0 7px;
       }
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
     `
   ]
 })
@@ -85,13 +95,19 @@ export class InicioComponent implements OnInit {
   monitorColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
   bcvColumns: string[] = ['date', 'rate', 'diferencia'];
 
+  // Loading states
+  loadingComparison = true;
+  loadingMonitor = true;
+  loadingExchange = true;
+  loadingBcv = true;
+
   constructor(private supabaseService: SupabaseService) {
     moment.locale('es');
   }
 
   async ngOnInit() {
-    await this.loadExchangeRates();
     await this.loadMonitorRates();
+    await this.loadExchangeRates();
     await this.loadBcvRates();
     this.combineRates();
     this.processExchangeRates();
@@ -100,21 +116,49 @@ export class InicioComponent implements OnInit {
   }
 
   async loadExchangeRates() {
-    const { data, error } = await this.supabaseService.getClient()
-      .from('exchange_rates')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(2);
-
-    if (error) {
-      console.error('Error cargando exchange rates:', error);
+    this.loadingExchange = true;
+    if (this.monitorRates.length === 0) {
+      console.error('No hay monitor rates disponibles');
       return;
     }
 
-    this.exchangeRates = data || [];
+    const lastMonitorDate = this.monitorRates[0].datetime;
+
+    // Obtenemos el último registro y el registro más cercano a la fecha del monitor
+    const { data: latestData, error: latestError } = await this.supabaseService.getClient()
+      .from('exchange_rates')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (latestError) {
+      console.error('Error cargando último exchange rate:', latestError);
+      return;
+    }
+
+    const { data: closestData, error: closestError } = await this.supabaseService.getClient()
+      .from('exchange_rates')
+      .select('*')
+      .lte('created_at', lastMonitorDate)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (closestError) {
+      console.error('Error cargando exchange rate cercano:', closestError);
+      return;
+    }
+      console.error('Error cargando exchange rate cercano:', closestError);
+    // Combinamos los resultados, evitando duplicados si el más reciente es tmbién el más cercano
+    this.exchangeRates = latestData && closestData ?
+      latestData[0].created_at === closestData[0].created_at ?
+        latestData :
+        [...latestData, ...closestData] :
+      [];
+    this.loadingExchange = false;
   }
 
   async loadMonitorRates() {
+    this.loadingMonitor = true;
     const { data, error } = await this.supabaseService.getClient()
       .from('monitor_rates')
       .select('*')
@@ -127,9 +171,11 @@ export class InicioComponent implements OnInit {
     }
 
     this.monitorRates = data || [];
+    this.loadingMonitor = false;
   }
 
   async loadBcvRates() {
+    this.loadingBcv = true;
     const { data, error } = await this.supabaseService.getClient()
       .from('bcv_rates')
       .select('*')
@@ -142,6 +188,7 @@ export class InicioComponent implements OnInit {
     }
 
     this.bcvRates = data || [];
+    this.loadingBcv = false;
   }
 
   private calculateDifference(current: number, previous: number) {
@@ -201,7 +248,6 @@ export class InicioComponent implements OnInit {
       processRate(current.usdtbnbvzla_rate, previous.usdtbnbvzla_rate, 'Usdtbnbvzla'),
       processRate(current.syklo_rate, previous.syklo_rate, 'Syklo'),
       processRate(current.mkfrontera_rate, previous.mkfrontera_rate, 'Mkfrontera'),
-      processRate(current.billeterap2p_rate, previous.billeterap2p_rate, 'Billeterap2p'),
       processRate(current.eldorado_rate, previous.eldorado_rate, 'Eldorado'),
 
     ];
@@ -224,64 +270,35 @@ export class InicioComponent implements OnInit {
   }
 
   private combineRates() {
-    if (this.exchangeRates.length === 0 || this.monitorRates.length === 0) return;
+    this.loadingComparison = true;
+    if (this.monitorRates.length === 0 || this.exchangeRates.length === 0) {
+      console.error('No hay datos suficientes para combinar');
+      this.loadingComparison = false;
+      return;
+    }
 
-    const latestExchange = this.exchangeRates[0];
-    const latestMonitor = this.monitorRates[0];
+    const monitorRate = this.monitorRates[0];
+    const exchangeRate = this.exchangeRates[0];
+    const previousMonitorRate = this.monitorRates[1];
+    const previousExchangeRate = this.exchangeRates[1];
 
-    const exchangeMoment = moment(latestExchange.created_at);
-    const monitorMoment = moment(latestMonitor.datetime);
-
-    const calculateTimeDifference = (time1: moment.Moment, time2: moment.Moment): string => {
-      const diffMinutes = Math.abs(time1.diff(time2, 'minutes'));
-      if (diffMinutes < 60) {
-        return `${diffMinutes} minutos`;
-      }
-      const diffHours = Math.floor(diffMinutes / 60);
-      const remainingMinutes = diffMinutes % 60;
-      if (remainingMinutes === 0) {
-        return `${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
-      }
-      return `${diffHours} hora${diffHours !== 1 ? 's' : ''} y ${remainingMinutes} minuto${remainingMinutes !== 1 ? 's' : ''}`;
-    };
+    const currentMoment = moment(monitorRate.datetime);
+    const previousMoment = moment(previousMonitorRate.datetime);
+    const timeDiff = currentMoment.from(previousMoment);
 
     this.combinedRates = [
       {
-        exchange: 'Total',
-        exchange_rate: latestExchange.total_rate || 0,
-        monitor_rate: latestMonitor.total_rate || 0,
-        ...this.calculateDifference(latestExchange.total_rate || 0, latestMonitor.total_rate || 0),
-        last_update_exchange: exchangeMoment,
-        last_update_monitor: monitorMoment,
-        tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
-      },
-      {
-        exchange: 'Eldorado',
-        exchange_rate: latestExchange.eldorado_rate || 0,
-        monitor_rate: latestMonitor.eldorado_rate || 0,
-        ...this.calculateDifference(latestExchange.eldorado_rate || 0, latestMonitor.eldorado_rate || 0),
-        last_update_exchange: exchangeMoment,
-        last_update_monitor: monitorMoment,
-        tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
-      },
-      {
-        exchange: 'Syklo',
-        exchange_rate: latestExchange.syklo_rate || 0,
-        monitor_rate: latestMonitor.syklo_rate || 0,
-        ...this.calculateDifference(latestExchange.syklo_rate || 0, latestMonitor.syklo_rate || 0),
-        last_update_exchange: exchangeMoment,
-        last_update_monitor: monitorMoment,
-        tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
-      },
-      {
-        exchange: 'Yadio',
-        exchange_rate: latestExchange.yadio_rate || 0,
-        monitor_rate: latestMonitor.yadio_rate || 0,
-        ...this.calculateDifference(latestExchange.yadio_rate || 0, latestMonitor.yadio_rate || 0),
-        last_update_exchange: exchangeMoment,
-        last_update_monitor: monitorMoment,
-        tiempo_diferencia: calculateTimeDifference(exchangeMoment, monitorMoment)
-      },
+        exchange: 'Monitor',
+        monitor_rate: monitorRate.total_rate,
+        exchange_rate: exchangeRate.total_rate,
+        diferencia: Number((monitorRate.total_rate - exchangeRate.total_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((monitorRate.total_rate - exchangeRate.total_rate) / exchangeRate.total_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff,
+        last_update_monitor: moment(monitorRate.datetime),
+        last_update_exchange: moment(exchangeRate.created_at)
+      }
     ];
+
+    this.loadingComparison = false;
   }
 }

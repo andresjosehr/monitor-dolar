@@ -173,7 +173,6 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
           index === 0 || item.time !== self[index - 1].time
         );
 
-        console.log(this.exchangeData);
 
       // Actualizar el gráfico si ya está inicializado
       if (this.chart) {
