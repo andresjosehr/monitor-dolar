@@ -196,7 +196,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     this.monitorSeries = this.chart.addSeries(LineSeries, {
       color: '#2962FF',
       lineWidth: 2,
-      title: 'Monitor',
+      title: '',
       priceLineVisible: true,
       priceLineColor: '#2962FF',
       priceLineWidth: 1,
@@ -207,7 +207,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     this.exchangeSeries = this.chart.addSeries(LineSeries, {
       color: '#FF6D00',
       lineWidth: 2,
-      title: 'Exchange',
+      title: '',
       priceLineVisible: false,
       lastValueVisible: true,
     });
@@ -322,6 +322,8 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Convertir las fechas al formato esperado por el gráfico
   private getTimeForSeries(momentObj: moment.Moment): number {
-    return Math.floor(momentObj.valueOf() / 1000) as UTCTimestamp;
+    // return Math.floor(momentObj.valueOf() / 1000) as UTCTimestamp;
+    // Substract 4 hours to the date
+    return Math.floor((momentObj.valueOf() - 4 * 60 * 60 * 1000) / 1000) as UTCTimestamp;
   }
 }
