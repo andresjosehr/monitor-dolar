@@ -1,0 +1,110 @@
+{
+  "configVersion": 1,
+  "timestamp": 1747621464093,
+  "index": "/monitor-dolar/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/monitor-dolar/chunk-2DXVO2BR.js",
+        "/monitor-dolar/chunk-AQT7K737.js",
+        "/monitor-dolar/chunk-KLH636ZO.js",
+        "/monitor-dolar/chunk-N2HYM3BR.js",
+        "/monitor-dolar/chunk-R5HC3FKR.js",
+        "/monitor-dolar/chunk-TWZW5B45.js",
+        "/monitor-dolar/favicon.ico",
+        "/monitor-dolar/index.html",
+        "/monitor-dolar/main-W5PBBLL3.js",
+        "/monitor-dolar/manifest.webmanifest",
+        "/monitor-dolar/polyfills-FFHMD2TL.js",
+        "/monitor-dolar/styles-W6XBKYJQ.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/monitor-dolar/icons/icon-1024x1024.png",
+        "/monitor-dolar/icons/icon-128x128.png",
+        "/monitor-dolar/icons/icon-144x144.png",
+        "/monitor-dolar/icons/icon-152x152.png",
+        "/monitor-dolar/icons/icon-192x192.png",
+        "/monitor-dolar/icons/icon-384x384.png",
+        "/monitor-dolar/icons/icon-512x512.png",
+        "/monitor-dolar/icons/icon-72x72.png",
+        "/monitor-dolar/icons/icon-96x96.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "supabase-api-performance",
+      "patterns": [
+        "https:\\/\\/jdfkckuzxofrecysgdhm\\.supabase\\.co\\/rest\\/v1\\/exchange_rates[^/]*",
+        "https:\\/\\/jdfkckuzxofrecysgdhm\\.supabase\\.co\\/rest\\/v1\\/monitor_rates[^/]*",
+        "https:\\/\\/jdfkckuzxofrecysgdhm\\.supabase\\.co\\/rest\\/v1\\/bcv_rates[^/]*"
+      ],
+      "strategy": "performance",
+      "maxSize": 100,
+      "maxAge": 3600000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/monitor-dolar/chunk-2DXVO2BR.js": "f758fa5d49d653bf84aa3f44eeac5a264bda32ae",
+    "/monitor-dolar/chunk-AQT7K737.js": "7c3effe91f59f7a6ccd558d9b87c7c645f5e776b",
+    "/monitor-dolar/chunk-KLH636ZO.js": "5fae91e39a82cd6fc6c9350b93c6337b0a9bcdc9",
+    "/monitor-dolar/chunk-N2HYM3BR.js": "d1876b675313522534dfb1fa4bb58c597d93d960",
+    "/monitor-dolar/chunk-R5HC3FKR.js": "1286e5b8bc161692841fb05adce466ea20a6dc46",
+    "/monitor-dolar/chunk-TWZW5B45.js": "08bf566d05ea9be3f559aa202c06eca5bde05111",
+    "/monitor-dolar/favicon.ico": "ac8e587bb88a1e29cd00a85f0e0498074820a4f2",
+    "/monitor-dolar/icons/icon-1024x1024.png": "78984ce6ffc071940bbf955a7c659ed036b51478",
+    "/monitor-dolar/icons/icon-128x128.png": "034e4ae39e80843b3cad5f6407970f8682c783a6",
+    "/monitor-dolar/icons/icon-144x144.png": "bbdd53b5a3a6d36f8fb5216556f2e0b90822d745",
+    "/monitor-dolar/icons/icon-152x152.png": "a49a1a20cc1bd849552b05102234575d5b1a1f93",
+    "/monitor-dolar/icons/icon-192x192.png": "e2cb96bf2f9ac6f6d6a55529ee069dfd4264d9a3",
+    "/monitor-dolar/icons/icon-384x384.png": "765e5945d246bf26123bb092893bc1a28b321b06",
+    "/monitor-dolar/icons/icon-512x512.png": "5e45e1740dc146b5efc15f1dfcedc473057a5090",
+    "/monitor-dolar/icons/icon-72x72.png": "73c4f77002b79b2ec57481ebdf3a2e704a231287",
+    "/monitor-dolar/icons/icon-96x96.png": "47a073f2f14ad41f4aef6501e8c966b276083c1c",
+    "/monitor-dolar/index.html": "87d5d4dce9a88ac56d0ab34081600c3ecb9c6a23",
+    "/monitor-dolar/main-W5PBBLL3.js": "ae4bc86c61e8bb185e784e928f534678114fa2f4",
+    "/monitor-dolar/manifest.webmanifest": "1d3f0dd8313b751a36fec3d9b803d5e837fe4afe",
+    "/monitor-dolar/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
+    "/monitor-dolar/styles-W6XBKYJQ.css": "6f36023df2a5363025161add45367e7e438cfd18"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
