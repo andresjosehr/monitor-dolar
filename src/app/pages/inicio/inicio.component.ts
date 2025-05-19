@@ -12,6 +12,7 @@ import 'moment/locale/es';
 import { PriceChartComponent } from '../../chart/price-chart/price-chart.component';
 import { CurrencyCalculatorComponent } from '../../components/currency-calculator/currency-calculator.component';
 import { PwaPromptComponent } from '../../components/pwa-prompt/pwa-prompt.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
 type MonitorRate = Database['public']['Tables']['monitor_rates']['Row'];
@@ -35,6 +36,7 @@ interface ExchangeRateComparison {
   diferencia: number;
   diferencia_porcentaje: number;
   last_update: moment.Moment;
+  previous_update: moment.Moment;
 }
 
 interface MonitorRateComparison {
@@ -44,6 +46,7 @@ interface MonitorRateComparison {
   diferencia: number;
   diferencia_porcentaje: number;
   last_update: moment.Moment;
+  previous_update: moment.Moment;
 }
 
 interface BcvRateComparison {
@@ -67,7 +70,8 @@ interface BcvRateComparison {
     DecimalPipe,
     PriceChartComponent,
     CurrencyCalculatorComponent,
-    PwaPromptComponent
+    PwaPromptComponent,
+    MatTabsModule
   ],
   styles: [
     `
@@ -80,6 +84,9 @@ interface BcvRateComparison {
       align-items: center;
       min-height: 200px;
     }
+    ::ng-deep .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab {
+      height: 20px;
+    }
     `
   ]
 })
@@ -88,6 +95,7 @@ export class InicioComponent implements OnInit {
   monitorRates: MonitorRate[] = [];
   bcvRates: BcvRate[] = [];
   combinedRates: CombinedRate[] = [];
+  combinedRates2: CombinedRate[] = [];
   exchangeComparisons: ExchangeRateComparison[] = [];
   monitorComparisons: MonitorRateComparison[] = [];
   bcvComparisons: BcvRateComparison[] = [];
@@ -99,6 +107,7 @@ export class InicioComponent implements OnInit {
 
   // Loading states
   loadingComparison = true;
+  loadingComparison2 = true;
   loadingMonitor = true;
   loadingExchange = true;
   loadingBcv = true;
@@ -207,16 +216,17 @@ export class InicioComponent implements OnInit {
     const current = this.exchangeRates[0];
     const previous = this.exchangeRates[1];
     const currentMoment = moment(current.created_at);
+    const previousMoment = moment(previous.created_at);
 
     const processRate = (currentRate: number, previousRate: number, exchangeName: string) => ({
       exchange: exchangeName,
       current_rate: currentRate || 0,
       previous_rate: previousRate || 0,
       ...this.calculateDifference(currentRate || 0, previousRate || 0),
-      last_update: currentMoment
+      last_update: currentMoment,
+      previous_update: previousMoment
     });
 
-    console.log(current);
     this.exchangeComparisons = [
       processRate(current.total_rate, previous.total_rate, 'Total'),
       processRate(current.binance_rate, previous.binance_rate, 'Binance'),
@@ -224,6 +234,7 @@ export class InicioComponent implements OnInit {
       processRate(current.syklo_rate, previous.syklo_rate, 'Syklo'),
       processRate(current.yadio_rate, previous.yadio_rate, 'Yadio'),
     ];
+
   }
 
   private processMonitorRates() {
@@ -232,13 +243,15 @@ export class InicioComponent implements OnInit {
     const current = this.monitorRates[0];
     const previous = this.monitorRates[1];
     const currentMoment = moment(current.datetime);
+    const previousMoment = moment(previous.datetime);
 
     const processRate = (currentRate: number, previousRate: number, exchangeName: string) => ({
       exchange: exchangeName,
       current_rate: currentRate || 0,
       previous_rate: previousRate || 0,
       ...this.calculateDifference(currentRate || 0, previousRate || 0),
-      last_update: currentMoment
+      last_update: currentMoment,
+      previous_update: previousMoment
     });
 
     this.monitorComparisons = [
@@ -281,12 +294,9 @@ export class InicioComponent implements OnInit {
 
     const monitorRate = this.monitorRates[0];
     const exchangeRate = this.exchangeRates[0];
-    const previousMonitorRate = this.monitorRates[1];
-    const previousExchangeRate = this.exchangeRates[1];
 
-    const currentMoment = moment(monitorRate.datetime);
-    const previousMoment = moment(previousMonitorRate.datetime);
-    const timeDiff = currentMoment.from(previousMoment);
+    const timeDiff = moment(monitorRate.datetime).from(exchangeRate.created_at);
+
 
     this.combinedRates = [
       {
@@ -334,6 +344,55 @@ export class InicioComponent implements OnInit {
       }
     ];
 
+
+    const monitorRate2 = this.monitorRates[0];
+    const exchangeRate2 = this.exchangeRates[1];
+
+    const timeDiff2 = moment(monitorRate2.datetime).from(exchangeRate2.created_at);
+    this.combinedRates2 = [
+      {
+        exchange: 'Total',
+        monitor_rate: monitorRate2.total_rate,
+        exchange_rate: exchangeRate2.total_rate,
+        diferencia: Number((exchangeRate2.total_rate - monitorRate2.total_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate2.total_rate - monitorRate2.total_rate) / exchangeRate2.total_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff2,
+        last_update_monitor: moment(monitorRate2.datetime),
+        last_update_exchange: moment(exchangeRate2.created_at)
+      },
+      {
+        exchange: 'Eldorado',
+        monitor_rate: monitorRate2.eldorado_rate,
+        exchange_rate: exchangeRate2.eldorado_rate,
+        diferencia: Number((exchangeRate2.eldorado_rate - monitorRate2.eldorado_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate2.eldorado_rate - monitorRate2.eldorado_rate) / exchangeRate2.eldorado_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff2,
+        last_update_monitor: moment(monitorRate2.datetime),
+        last_update_exchange: moment(exchangeRate2.created_at)
+      },
+      {
+        exchange: 'Syklo',
+        monitor_rate: monitorRate2.syklo_rate,
+        exchange_rate: exchangeRate2.syklo_rate,
+        diferencia: Number((exchangeRate2.syklo_rate - monitorRate2.syklo_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate2.syklo_rate - monitorRate2.syklo_rate) / exchangeRate2.syklo_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff2,
+        last_update_monitor: moment(monitorRate2.datetime),
+        last_update_exchange: moment(exchangeRate2.created_at)
+      },
+      {
+        exchange: 'Yadio',
+        monitor_rate: monitorRate2.yadio_rate,
+        exchange_rate: exchangeRate2.yadio_rate,
+        diferencia: Number((exchangeRate2.yadio_rate - monitorRate2.yadio_rate).toFixed(2)),
+        diferencia_porcentaje: Number((((exchangeRate2.yadio_rate - monitorRate2.yadio_rate) / exchangeRate2.yadio_rate) * 100).toFixed(2)),
+        tiempo_diferencia: timeDiff2,
+        last_update_monitor: moment(monitorRate2.datetime),
+        last_update_exchange: moment(exchangeRate2.created_at)
+      }
+    ]
+
     this.loadingComparison = false;
+    this.loadingComparison2 = false;
   }
 }
