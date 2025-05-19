@@ -34,12 +34,14 @@
             <input matInput type="text" [(ngModel)]="btb_displayBcvAmount" (input)="btb_onBcvInput($event)" (blur)="onBcvBlur()">
           </mat-form-field>
 
+          <div class="spinner-container" *ngIf="isLoadingBinance">
+            <mat-spinner diameter="30"></mat-spinner>
+          </div>
+
           <mat-form-field appearance="fill">
             <mat-label>Monto en Binance</mat-label>
-            <input matInput type="text" [(ngModel)]="btb_displayBinanceAmount" (input)="btb_onBinanceInput($event)" (blur)="onBinanceBlur()">
+            <input matInput type="text" [(ngModel)]="btb_displayBinanceAmount" [disabled]="true">
           </mat-form-field>
-
-
         </div>
       </mat-tab>
     </mat-tab-group>

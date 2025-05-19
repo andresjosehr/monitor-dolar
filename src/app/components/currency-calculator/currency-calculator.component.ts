@@ -1,11 +1,14 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatTabsModule} from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BinanceService } from '../../services/binance.service';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-currency-calculator',
@@ -17,6 +20,7 @@ import { BinanceService } from '../../services/binance.service';
     MatTabsModule,
     MatInputModule,
     MatFormFieldModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './currency-calculator.component.html',
   styles: [
@@ -31,10 +35,17 @@ import { BinanceService } from '../../services/binance.service';
     mat-form-field {
       width: 100%;
     }
+
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+    }
     `
   ]
 })
-export class CurrencyCalculatorComponent implements OnInit {
+export class CurrencyCalculatorComponent implements OnInit, OnDestroy {
   @Input() monitorRate: number = 0;
   @Input() bcvRate: number = 0;
   averageRate: number = 0;
@@ -56,10 +67,30 @@ export class CurrencyCalculatorComponent implements OnInit {
   btb_displayBcvAmount: string = '';
   btb_displayBinanceAmount: string = '';
 
-  constructor(private binanceService: BinanceService) {}
+  // Variables para el debounce y loading
+  private bcvInputSubject = new Subject<number>();
+  private destroy$ = new Subject<void>();
+  isLoadingBinance = false;
+
+  constructor(private binanceService: BinanceService) {
+    // Configurar el debounce para el input de BCV
+    this.bcvInputSubject
+      .pipe(
+        debounceTime(500), // Esperar 500ms después de la última entrada
+        takeUntil(this.destroy$)
+      )
+      .subscribe(async (value) => {
+        await this.processBcvInput(value);
+      });
+  }
 
   ngOnInit() {
 
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // Listen when this.monitorRate and this.bcvRate changes and calculate the average rate after that
@@ -234,19 +265,26 @@ export class CurrencyCalculatorComponent implements OnInit {
 
   async btb_onBcvInput(event: Event) {
     const inputElement = event.target as HTMLInputElement;
-    const cursorPosition = inputElement.selectionStart;
     const inputValue = parseFloat(inputElement.value);
 
-    const vesValue = inputValue * this.bcvRate;
+    if (!isNaN(inputValue)) {
+      this.bcvInputSubject.next(inputValue);
+    }
+  }
 
-
-
-    const prices = await this.binanceService.getOffersApi(vesValue);
-    const priceBinance = prices[0].price;
-
-    const binanceAmount = parseFloat((vesValue / priceBinance).toFixed(2));
-
-    this.btb_displayBinanceAmount = this.formatNumber(binanceAmount);
+  private async processBcvInput(value: number) {
+    this.isLoadingBinance = true;
+    try {
+      const vesValue = value * this.bcvRate;
+      const prices = await this.binanceService.getOffersApi(vesValue);
+      const priceBinance = prices[0].price;
+      const binanceAmount = parseFloat((vesValue / priceBinance).toFixed(2));
+      this.btb_displayBinanceAmount = this.formatNumber(binanceAmount);
+    } catch (error) {
+      console.error('Error al obtener precios de Binance:', error);
+    } finally {
+      this.isLoadingBinance = false;
+    }
   }
 
   onBinanceBlur() {
