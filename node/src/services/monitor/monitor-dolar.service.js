@@ -60,7 +60,7 @@ class MonitorDolarService {
       const formattedDate = moment(
         `${date} ${time}`,
         "DD/MM/YYYY hh:mm A"
-      ).toDate() - 4 * 60 * 60 * 1000;
+      ).toDate();
 
       // Verificar si ya existe un registro con la misma fecha
       const existingRates = await monitorRates.getRatesByDateRange(
@@ -72,6 +72,9 @@ class MonitorDolarService {
         return null;
       }
 
+      // Substract 4 hours to the date
+      const dateSubstracted = moment(formattedDate).subtract(4, "hours").toDate();
+
       const rates = {
         airtm_rate       : monitors.airtminc.price,
         billeterap2p_rate: monitors.billeterap2p.price,
@@ -82,8 +85,10 @@ class MonitorDolarService {
         usdtbnbvzla_rate : monitors.usdtbnbvzla.price,
         yadio_rate       : monitors.yadio_io.price,
         total_rate       : monitors.enparalelovzla.price,
-        datetime         : formattedDate,
+        datetime         : dateSubstracted,
       };
+
+      // console.log(rates);
 
 
       const result = await monitorRates.insertRates(rates);

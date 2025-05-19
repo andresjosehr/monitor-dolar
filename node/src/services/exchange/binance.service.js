@@ -49,13 +49,13 @@ class BinanceService {
     }
 
     async getRate() {
-        const amounts = [10, 100, 1000, 10000];
+        const amounts = [100, 1000, 10000];
         let totalAverage = 0;
         let totalResults = 0;
 
         for (const amount of amounts) {
             try {
-                const offers = await this.getOffersApi(amount, "SELL");
+                const offers = await this.getOffersApi(amount, "BUY");
 
                 if (offers && offers.length > 0) {
                     const sum = offers.reduce((acc, offer) => acc + parseFloat(offer.price), 0);
