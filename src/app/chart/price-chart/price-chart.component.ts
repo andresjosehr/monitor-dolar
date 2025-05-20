@@ -174,6 +174,15 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dateRange.startDate, this.dateRange.endDate
       );
 
+      // Get aditional record from bcvRates with the last value of bcv_rate but with the datetime of now
+      const lastBcvRate = bcvRates[bcvRates.length - 1];
+      const now = new Date();
+      const additionalBcvRate = {
+        ...lastBcvRate,
+        created_at: moment(now).format('YYYY-MM-DD HH:mm:ss')
+      };
+      bcvRates.push(additionalBcvRate);
+
       // Limpiar series existentes
       this.series = [];
 
@@ -190,7 +199,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
             lastValueVisible: true,
             priceLineVisible: false,
           },
-          visible: true
+          visible: false
         });
       }
 
@@ -407,7 +416,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       lineWidth: 1,
       crosshairMarkerVisible: true,
       crosshairMarkerRadius: 6,
-      title: 'Monitor Markers'
+      title: ''
     });
 
     // Establecer los datos
@@ -417,9 +426,9 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     const markers: SeriesMarker<UTCTimestamp>[] = this.monitorMarkersData.map(dataPoint => ({
       time: dataPoint.time as UTCTimestamp,
       position: 'inBar',
-      color: '#5C9DFF',
+      color: '#174180',
       shape: 'circle',
-      size: 6
+      size: 1
     }));
 
     createSeriesMarkers(this.monitorMarkersSeries, markers);
