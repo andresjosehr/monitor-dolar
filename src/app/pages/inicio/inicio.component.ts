@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -103,7 +103,7 @@ interface BinanceComparison {
     `
   ]
 })
-export class InicioComponent implements OnInit {
+export class InicioComponent implements OnInit, OnDestroy {
   exchangeRates: ExchangeRate[] = [];
   monitorRates: MonitorRate[] = [];
   bcvRates: BcvRate[] = [];
@@ -127,6 +127,8 @@ export class InicioComponent implements OnInit {
   loadingExchange = true;
   loadingBcv = true;
 
+  private updateIntervalId: any;
+
   constructor(
     private supabaseService: SupabaseService,
     private dialog: MatDialog
@@ -135,6 +137,25 @@ export class InicioComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.updateData();
+
+    // Configurar intervalo para verificar la hora cada minuto
+    this.updateIntervalId = setInterval(() => {
+      const currentMinute = moment().minute();
+      // Check if the minute is 2 or 7 within the 5-minute cycle
+      if (currentMinute % 5 === 2 || currentMinute % 5 === 7) {
+        this.updateData();
+      }
+    }, 60 * 1000); // Check every minute
+  }
+
+  ngOnDestroy() {
+    if (this.updateIntervalId) {
+      clearInterval(this.updateIntervalId);
+    }
+  }
+
+  private async updateData() {
     await this.loadMonitorRates();
     await this.loadExchangeRates();
     await this.loadBcvRates();

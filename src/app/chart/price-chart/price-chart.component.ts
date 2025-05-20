@@ -79,6 +79,9 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   private monitorMarkersData: LineData[] = [];
   private monitorMarkersSeries?: ISeriesApi<"Line">;
 
+  // Propiedad para almacenar el ID del intervalo de actualización
+  private updateInterval: any;
+
   // Configuración del gráfico
   settings: ChartSettings = {
     theme: 'light',
@@ -133,12 +136,19 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     // Inicializamos el gráfico cuando la vista esté lista
     this.initChart();
+    // Cargamos datos iniciales y configuramos la actualización periódica
+    this.loadChartData();
+    this.setupPeriodicUpdate();
   }
 
   ngOnDestroy() {
     // Limpiamos recursos al destruir el componente
     if (this.chart) {
       this.chart.remove();
+    }
+    // Limpiar el intervalo de actualización
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
     }
   }
 
@@ -564,5 +574,18 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       // Si no existe la serie de marcadores pero queremos mostrarlos, la añadimos
       this.addMonitorMarkers();
     }
+  }
+
+  // Configurar la actualización periódica
+  private setupPeriodicUpdate() {
+    // Implementa la lógica para configurar la actualización periódica
+    this.updateInterval = setInterval(() => {
+      const currentMinute = new Date().getMinutes();
+      // Actualizar cada 5 minutos, en los minutos 2 y 7
+      if (currentMinute % 5 === 2) {
+        console.log('Actualizando datos del gráfico...');
+        this.loadChartData();
+      }
+    }, 60 * 1000); // Ejecutar cada minuto
   }
 }
