@@ -12,75 +12,57 @@ class SykloService {
     };
   }
 
-  async getRate(maxRetries = 1) {
-    let retryCount = 0;
+  async getLastRate() {
+    const { data: lastRates, error } = await supabase
+      .from("exchange_rates")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-    while (retryCount < maxRetries) {
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
-      const page = await browser.newPage();
+    if (!lastRates || lastRates.length === 0) {
+      throw new Error("No hay tasas previas disponibles");
+    }
 
+    return lastRates[0].syklo_rate;
+  }
+
+  async scrapeRate() {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const page = await browser.newPage();
+
+    try {
+      await page.goto(this.URL_P2P, { waitUntil: "networkidle2" });
+      await page.waitForFunction(() => document.readyState === "complete");
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      const vesValue = await page.evaluate((selector) => {
+        return document.querySelector(selector).value;
+      }, this.SELECTORS.vesField);
+
+      const vesValueFloat = parseFloat(vesValue.replace(/,/g, ".")) / 100;
+
+      if (!vesValueFloat) {
+        throw new Error("No se pudo obtener un valor válido");
+      }
+
+      return parseFloat(vesValueFloat.toFixed(2));
+    } finally {
+      await browser.close();
+    }
+  }
+
+  async getRate(maxRetries = 3) {
+    for (let retryCount = 0; retryCount < maxRetries; retryCount++) {
       try {
-        // 1. Navegar y esperar carga completa
-        await page.goto(this.URL_P2P, { waitUntil: "networkidle2" });
-        await page.waitForFunction(() => document.readyState === "complete");
-
-        // Esperar a que el selector esté disponible
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-
-        // Obtener valor en VES
-        const vesValue = await page.evaluate((selector) => {
-          return document.querySelector(selector).value;
-        }, this.SELECTORS.vesField);
-
-        // Convertir a float
-        let vesValueFloat = parseFloat(vesValue.replace(/,/g, ".")) / 100;
-
-        // Validar valor en USD
-        if (!vesValueFloat) {
-          retryCount++;
-          await browser.close();
-          if (retryCount === maxRetries) {
-            // Obtener la última tasa registrada
-            const { data:lastRates, error } = await supabase
-              .from("exchange_rates")
-              .select("*")
-              .order("created_at", { ascending: false })
-              .limit(1);
-
-            if (lastRates && lastRates.length > 0) {
-              return lastRates[0].syklo_rate;
-            }
-            throw new Error(
-              `No se pudo obtener el valor después de ${maxRetries} intentos y no hay tasas previas disponibles`
-            );
-          }
-          continue;
-        }
-
-        vesValueFloat = parseFloat(vesValueFloat.toFixed(2));
-        await browser.close();
-        return vesValueFloat;
+        return await this.scrapeRate();
       } catch (error) {
-        console.error(`Error en intento ${retryCount + 1}:`, error);
-        await browser.close();
-        retryCount++;
+        // console.error(`Error en intento ${retryCount + 1}:`, error);
 
-        if (retryCount === maxRetries) {
-          // Obtener la última tasa registrada
-          const { data:lastRates, error } = await supabase
-            .from("exchange_rates")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(1);
-          if (lastRates && lastRates.length > 0) {
-            return lastRates[0].syklo_rate;
-          }
-          throw new Error(
-            `No se pudo obtener el valor después de ${maxRetries} intentos y no hay tasas previas disponibles`
-          );
+        if (retryCount === maxRetries - 1) {
+          return await this.getLastRate();
         }
       }
     }
