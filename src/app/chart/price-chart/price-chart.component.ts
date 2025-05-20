@@ -22,7 +22,9 @@ import {
   SeriesType,
   LineSeries,
   PriceLineSource,
-  IPriceLine
+  IPriceLine,
+  createSeriesMarkers,
+  SeriesMarker
 } from 'lightweight-charts';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { DateRangeSelectorComponent, DateRange } from '../date-range-selector/date-range-selector.component';
@@ -38,6 +40,7 @@ interface ChartSeries {
   type: 'monitor' | 'exchange' | 'bcv';
   isTotal?: boolean;
   priceLine?: IPriceLine;
+  markers?: SeriesMarker<UTCTimestamp>[];
 }
 
 interface ChartSettings {
@@ -79,6 +82,9 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     chartType: 'line',
     timeUnit: 'day'
   };
+
+  // Control de visibilidad de marcadores
+  showMonitorMarkers = true;
 
   // Fechas para el filtro
   dateRange: DateRange = {
@@ -188,11 +194,28 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       // Procesar datos de Monitor
       if (monitorRates.length > 0) {
         // Serie total de Monitor
+        const monitorTotalData = this.processRateData(monitorRates, 'total_rate', 'datetime');
+
+        // Remove last point
+
+
+        // Crear marcadores para todos los puntos de la serie monitor_total
+        const monitorTotalMarkers: SeriesMarker<UTCTimestamp>[] = monitorTotalData.map(dataPoint => ({
+          time: dataPoint.time as UTCTimestamp,
+          position: 'inBar',
+          color: '#5C9DFF', // Un azul más vivo
+          shape: 'circle',
+          size: 3, // Tamaño más grande para mejor visibilidad
+          text: 'M' // Texto para identificar que es un punto de Monitor
+        }));
+
+        // remove last point
+
         this.addSeries({
           id: 'monitor_total',
           name: 'Monitor Total',
           type: 'monitor',
-          data: this.processRateData(monitorRates, 'total_rate', 'datetime'),
+          data: monitorTotalData,
           options: {
             color: this.seriesColors.monitor.total,
             lineWidth: 2,
@@ -201,7 +224,8 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
             lastValueVisible: true,
           },
           visible: true,
-          isTotal: true
+          isTotal: true,
+          markers: monitorTotalMarkers,
         });
 
         // Series individuales de Monitor
@@ -358,6 +382,11 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
       series.series = this.chart?.addSeries(LineSeries, options);
       series.series?.setData(series.data);
+
+      // Añadir marcadores si existen
+      if (series.markers && series.markers.length > 0 && series.series) {
+        createSeriesMarkers(series.series, series.markers);
+      }
     });
 
     // Actualizar visibilidad
@@ -462,5 +491,22 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // Permitir ocultar cualquier serie, incluidas las series totales
     series.visible = !series.visible;
     this.updateSeriesVisibility();
+  }
+
+  // Alternar visibilidad de los marcadores de monitor_total
+  toggleMonitorMarkers() {
+    this.showMonitorMarkers = !this.showMonitorMarkers;
+
+    // Encontrar la serie monitor_total
+    const monitorTotal = this.series.find(s => s.id === 'monitor_total');
+    if (!monitorTotal || !monitorTotal.series || !monitorTotal.markers) return;
+
+    if (this.showMonitorMarkers) {
+      // Mostrar marcadores
+      createSeriesMarkers(monitorTotal.series, monitorTotal.markers);
+    } else {
+      // Ocultar marcadores (estableciendo un array vacío)
+      createSeriesMarkers(monitorTotal.series, []);
+    }
   }
 }

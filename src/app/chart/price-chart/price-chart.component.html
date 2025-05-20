@@ -2,6 +2,15 @@
   <mat-card-header class="!p-0">
     <div class="flex justify-between items-start w-full mb-4">
       <mat-card-title>Gráfico Comparativo de Tasas</mat-card-title>
+      <div>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="toggleMonitorMarkers()"
+          matTooltip="Mostrar/ocultar marcadores de puntos del Monitor">
+          {{ showMonitorMarkers ? 'Ocultar' : 'Mostrar' }} marcadores
+        </button>
+      </div>
     </div>
   </mat-card-header>
 
