@@ -131,13 +131,13 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     // Cargamos datos iniciales
     // this.loadChartData();
+    console.log('ngOnInit woring');
   }
 
   ngAfterViewInit() {
     // Inicializamos el gráfico cuando la vista esté lista
     this.initChart();
     // Cargamos datos iniciales y configuramos la actualización periódica
-    this.loadChartData();
     this.setupPeriodicUpdate();
   }
 
@@ -579,10 +579,14 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   // Configurar la actualización periódica
   private setupPeriodicUpdate() {
     // Implementa la lógica para configurar la actualización periódica
+
+    // Cargar datos inicialmente
+    this.loadChartData();
+
     this.updateInterval = setInterval(() => {
       const currentMinute = new Date().getMinutes();
       // Actualizar cada 5 minutos, en los minutos 2 y 7
-      if (currentMinute % 5 === 2) {
+      if (currentMinute % 5 === 2 || currentMinute % 5 === 7) {
         console.log('Actualizando datos del gráfico...');
         this.loadChartData();
       }
