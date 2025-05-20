@@ -35,7 +35,7 @@ interface ChartSeries {
   options: DeepPartial<LineSeriesOptions>;
   series?: ISeriesApi<"Line">;
   visible: boolean;
-  type: 'monitor' | 'exchange';
+  type: 'monitor' | 'exchange' | 'bcv';
   isTotal?: boolean;
   priceLine?: IPriceLine;
 }
@@ -105,6 +105,9 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       eldorado: '#F44336',
       syklo: '#009688',
       yadio: '#607D8B'
+    },
+    bcv: {
+      rate: '#E91E63'
     }
   };
 
@@ -157,8 +160,29 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dateRange.startDate, this.dateRange.endDate
       );
 
+      const bcvRates = await this.supabaseService.getHistoricalBcvRates(
+        this.dateRange.startDate, this.dateRange.endDate
+      );
+
       // Limpiar series existentes
       this.series = [];
+
+      // Procesar datos de BCV
+      if (bcvRates.length > 0) {
+        this.addSeries({
+          id: 'bcv_rate',
+          name: 'BCV',
+          type: 'bcv',
+          data: this.processRateData(bcvRates, 'bcv_rate', 'created_at'),
+          options: {
+            color: this.seriesColors.bcv.rate,
+            lineWidth: 2,
+            lastValueVisible: true,
+            priceLineVisible: false,
+          },
+          visible: true
+        });
+      }
 
       // Procesar datos de Monitor
       if (monitorRates.length > 0) {

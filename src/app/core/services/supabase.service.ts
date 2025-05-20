@@ -51,4 +51,20 @@ export class SupabaseService {
 
     return data || [];
   }
+
+  async getHistoricalBcvRates(startDate: Date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), endDate: Date = new Date()) {
+    const { data, error } = await this.supabase
+      .from('bcv_rates')
+      .select('*')
+      .gte('created_at', moment(startDate).format('YYYY-MM-DD'))
+      .lte('created_at', moment(endDate).add(1, 'days').format('YYYY-MM-DD'))
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error cargando historical BCV rates:', error);
+      return [];
+    }
+
+    return data || [];
+  }
 }
