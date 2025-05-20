@@ -7,6 +7,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatChipsModule } from '@angular/material/chips';
+import { FilterPipe } from '../pipes/filter.pipe';
 import {
   createChart,
   IChartApi,
@@ -19,22 +21,27 @@ import {
   LineStyle,
   SeriesType,
   LineSeries,
-  PriceLineSource
+  PriceLineSource,
+  IPriceLine
 } from 'lightweight-charts';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { DateRangeSelectorComponent, DateRange } from '../date-range-selector/date-range-selector.component';
 import moment from 'moment';
 
 interface ChartSeries {
+  id: string;
   name: string;
   data: LineData[];
   options: DeepPartial<LineSeriesOptions>;
+  series?: ISeriesApi<"Line">;
+  visible: boolean;
+  type: 'monitor' | 'exchange';
+  isTotal?: boolean;
+  priceLine?: IPriceLine;
 }
 
 interface ChartSettings {
   theme: 'light' | 'dark';
-  showMonitor: boolean;
-  showExchange: boolean;
   chartType: 'line' | 'area';
   timeUnit: 'hour' | 'day';
 }
@@ -51,28 +58,24 @@ interface ChartSettings {
     DateRangeSelectorComponent,
     FormsModule,
     MatSelectModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatChipsModule,
+    FilterPipe
   ],
-  templateUrl: './price-chart.component.html',
-  styleUrls: ['./price-chart.component.scss']
+  templateUrl: './price-chart.component.html'
 })
 export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartContainer') chartContainer!: ElementRef;
 
   // Variables para el gráfico
   private chart?: IChartApi;
-  private monitorSeries?: ISeriesApi<"Line">;
-  private exchangeSeries?: ISeriesApi<"Line">;
 
-  // Datos y series
-  monitorData: LineData[] = [];
-  exchangeData: LineData[] = [];
+  // Series disponibles
+  series: ChartSeries[] = [];
 
   // Configuración del gráfico
   settings: ChartSettings = {
     theme: 'light',
-    showMonitor: true,
-    showExchange: true,
     chartType: 'line',
     timeUnit: 'day'
   };
@@ -83,29 +86,35 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     endDate: new Date()
   };
 
-  // Opciones de temas
-  readonly themeOptions = [
-    { value: 'light', label: 'Claro' },
-    { value: 'dark', label: 'Oscuro' }
-  ];
+  // Colores para las series
+  readonly seriesColors = {
+    monitor: {
+      total: '#2962FF',
+      airtm: '#4CAF50',
+      billeterap2p: '#9C27B0',
+      cambiosrya: '#FF9800',
+      eldorado: '#F44336',
+      mkfrontera: '#3F51B5',
+      syklo: '#009688',
+      usdtbnbvzla: '#795548',
+      yadio: '#607D8B'
+    },
+    exchange: {
+      total: '#FF6D00',
+      binance: '#F9A825',
+      eldorado: '#F44336',
+      syklo: '#009688',
+      yadio: '#607D8B'
+    }
+  };
 
-  // Opciones de tipo de gráfico
-  readonly chartTypeOptions = [
-    { value: 'line', label: 'Línea' },
-    { value: 'area', label: 'Área' }
-  ];
-
-  // Opciones de unidad de tiempo
-  readonly timeUnitOptions = [
-    { value: 'hour', label: 'Hora' },
-    { value: 'day', label: 'Día' }
-  ];
+  private monitorTotalPriceLine?: IPriceLine;
 
   constructor(private supabaseService: SupabaseService) {}
 
   ngOnInit() {
     // Cargamos datos iniciales
-    this.loadChartData();
+    // this.loadChartData();
   }
 
   ngAfterViewInit() {
@@ -133,10 +142,7 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Volver a dibujar el gráfico para aplicar cambios
     this.chart?.applyOptions(this.getChartOptions());
-
-    if (this.monitorSeries && this.exchangeSeries) {
-      this.chart?.timeScale().fitContent();
-    }
+    this.chart?.timeScale().fitContent();
   }
 
   // Cargar los datos para el gráfico
@@ -151,38 +157,130 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dateRange.startDate, this.dateRange.endDate
       );
 
-      // Procesar y ordenar los datos para el gráfico
-      this.monitorData = monitorRates
-        .map(rate => ({
-          time: this.getTimeForSeries(moment(rate.datetime)) as UTCTimestamp,
-          value: rate.total_rate
-        }))
-        .sort((a, b) => (a.time as number) - (b.time as number))
-        // Eliminar duplicados basados en el tiempo
-        .filter((item, index, self) =>
-          index === 0 || item.time !== self[index - 1].time
-        );
+      // Limpiar series existentes
+      this.series = [];
 
-      this.exchangeData = exchangeRates
-        .map(rate => ({
-          time: this.getTimeForSeries(moment(rate.created_at)) as UTCTimestamp,
-          value: rate.total_rate
-        }))
-        .sort((a, b) => (a.time as number) - (b.time as number))
-        // Eliminar duplicados basados en el tiempo
-        .filter((item, index, self) =>
-          index === 0 || item.time !== self[index - 1].time
-        );
+      // Procesar datos de Monitor
+      if (monitorRates.length > 0) {
+        // Serie total de Monitor
+        this.addSeries({
+          id: 'monitor_total',
+          name: 'Monitor Total',
+          type: 'monitor',
+          data: this.processRateData(monitorRates, 'total_rate', 'datetime'),
+          options: {
+            color: this.seriesColors.monitor.total,
+            lineWidth: 2,
+            // title: 'Monitor Total',
+            priceLineVisible: false,
+            lastValueVisible: true,
+          },
+          visible: true,
+          isTotal: true
+        });
 
+        // Series individuales de Monitor
+        const monitorFields = [
+          { id: 'airtm', name: 'AirTM' },
+          { id: 'billeterap2p', name: 'Billetera P2P' },
+          { id: 'cambiosrya', name: 'Cambios RyA' },
+          { id: 'eldorado', name: 'El Dorado' },
+          { id: 'mkfrontera', name: 'MK Frontera' },
+          { id: 'syklo', name: 'Syklo' },
+          { id: 'usdtbnbvzla', name: 'USDT BNB VZLA' },
+          { id: 'yadio', name: 'Yadio' }
+        ];
+
+        monitorFields
+        .forEach(field => {
+          this.addSeries({
+            id: `monitor_${field.id}`,
+            name: field.name,
+            type: 'monitor',
+            data: this.processRateData(monitorRates, `${field.id}_rate`, 'datetime'),
+            options: {
+              color: this.seriesColors.monitor[field.id as keyof typeof this.seriesColors.monitor],
+              lineWidth: 1,
+              // title: field.name,
+              lastValueVisible: true,
+              priceLineVisible: false,
+            },
+            visible: false
+          })
+        });
+      }
+
+      // Procesar datos de Exchange
+      if (exchangeRates.length > 0) {
+        // Serie total de Exchange
+        this.addSeries({
+          id: 'exchange_total',
+          name: 'Exchange Total',
+          type: 'exchange',
+          data: this.processRateData(exchangeRates, 'total_rate', 'created_at'),
+          options: {
+            color: this.seriesColors.exchange.total,
+            lineWidth: 2,
+            // title: 'Exchange Total',
+            lastValueVisible: true,
+            priceLineVisible: false,
+          },
+          visible: true,
+          isTotal: true
+        });
+
+        // Series individuales de Exchange
+        const exchangeFields = [
+          { id: 'binance', name: 'Binance' },
+          { id: 'eldorado', name: 'El Dorado' },
+          { id: 'syklo', name: 'Syklo' },
+          { id: 'yadio', name: 'Yadio' }
+        ];
+
+        exchangeFields.forEach(field => {
+          this.addSeries({
+            id: `exchange_${field.id}`,
+            name: field.name,
+            type: 'exchange',
+            data: this.processRateData(exchangeRates, `${field.id}_rate`, 'created_at'),
+            options: {
+              color: this.seriesColors.exchange[field.id as keyof typeof this.seriesColors.exchange],
+              lineWidth: 1,
+              // title: field.name,
+              lastValueVisible: true,
+              priceLineVisible: false,
+            },
+            visible: false
+          });
+        });
+      }
 
       // Actualizar el gráfico si ya está inicializado
       if (this.chart) {
-        this.updateSeries();
+        this.updateAllSeries();
       }
 
     } catch (error) {
       console.error('Error al cargar datos para el gráfico:', error);
     }
+  }
+
+  // Procesar datos de tasas
+  private processRateData(rates: any[], rateField: string, timeField: string): LineData[] {
+    return rates
+      .map(rate => ({
+        time: this.getTimeForSeries(moment(rate[timeField])) as UTCTimestamp,
+        value: rate[rateField]
+      }))
+      .sort((a, b) => (a.time as number) - (b.time as number))
+      .filter((item, index, self) =>
+        index === 0 || item.time !== self[index - 1].time
+      );
+  }
+
+  // Añadir una nueva serie
+  private addSeries(series: ChartSeries) {
+    this.series.push(series);
   }
 
   // Inicializar el gráfico
@@ -192,28 +290,8 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // Crear el gráfico con las opciones configuradas
     this.chart = createChart(container, this.getChartOptions());
 
-    // Añadir series
-    this.monitorSeries = this.chart.addSeries(LineSeries, {
-      color: '#2962FF',
-      lineWidth: 2,
-      title: '',
-      priceLineVisible: true,
-      priceLineColor: '#2962FF',
-      priceLineWidth: 1,
-      priceLineStyle: LineStyle.Dashed,
-      lastValueVisible: true,
-    });
-
-    this.exchangeSeries = this.chart.addSeries(LineSeries, {
-      color: '#FF6D00',
-      lineWidth: 2,
-      title: '',
-      priceLineVisible: false,
-      lastValueVisible: true,
-    });
-
-    // Actualizar con los datos iniciales
-    this.updateSeries();
+    // Inicializar todas las series
+    this.updateAllSeries();
 
     // Hacer que el grafico se ajuste al tamaño del contenedor
     const resizeObserver = new ResizeObserver(() => {
@@ -228,44 +306,69 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     resizeObserver.observe(container);
   }
 
-  // Actualizar las series con los nuevos datos
-  private updateSeries() {
-    if (!this.chart || !this.monitorSeries || !this.exchangeSeries) return;
+  // Actualizar todas las series
+  private updateAllSeries() {
+    if (!this.chart) return;
 
-    if (this.monitorData.length > 0) {
-      this.monitorSeries.setData(this.monitorData);
-      // Configurar la línea de precio con el último valor
-      const lastMonitorValue = this.monitorData[this.monitorData.length - 1].value;
-      this.monitorSeries.applyOptions({
-        priceLineVisible: true,
-        priceLineColor: '#2962FF',
-        priceLineWidth: 1,
-        priceLineStyle: LineStyle.Dashed,
-        priceLineSource: PriceLineSource.LastVisible,
-      });
-    }
+    // Eliminar series existentes
+    this.series.forEach(series => {
+      if (series.series) {
+        if (series.priceLine) {
+          series.series.removePriceLine(series.priceLine);
+          series.priceLine = undefined;
+        }
+        this.chart?.removeSeries(series.series);
+        series.series = undefined;
+      }
+    });
 
-    if (this.exchangeData.length > 0) {
-      this.exchangeSeries.setData(this.exchangeData);
-    }
+    // Añadir series nuevas
+    this.series.forEach(series => {
+      // Asegurarnos de que todas las series tengan priceLineVisible en false
+      const options = {
+        ...series.options,
+        priceLineVisible: false
+      };
+
+      series.series = this.chart?.addSeries(LineSeries, options);
+      series.series?.setData(series.data);
+    });
+
+    // Actualizar visibilidad
+    this.updateSeriesVisibility();
+
+    // Añadir línea horizontal con el último valor de monitor total
+    this.addMonitorTotalPriceLine();
 
     // Ajustar la escala para mostrar todos los datos
     this.chart.timeScale().fitContent();
+  }
 
-    // Actualizar la visibilidad de las series según la configuración
-    this.updateSeriesVisibility();
+  // Añadir línea horizontal con el último valor de monitor total
+  private addMonitorTotalPriceLine() {
+    const monitorTotalSeries = this.series.find(s => s.id === 'monitor_total');
+    if (monitorTotalSeries?.series && monitorTotalSeries.data.length > 0) {
+      const lastValue = monitorTotalSeries.data[monitorTotalSeries.data.length - 1].value;
+
+      this.monitorTotalPriceLine = monitorTotalSeries.series.createPriceLine({
+        price: lastValue,
+        color: monitorTotalSeries.options.color as string,
+        lineWidth: 1,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: false,
+        title: ``
+      });
+    }
   }
 
   // Actualizar visibilidad de series según configuración
   private updateSeriesVisibility() {
-    if (!this.monitorSeries || !this.exchangeSeries) return;
-
-    this.monitorSeries.applyOptions({
-      visible: this.settings.showMonitor
-    });
-
-    this.exchangeSeries.applyOptions({
-      visible: this.settings.showExchange
+    this.series.forEach(series => {
+      if (series.series) {
+        series.series.applyOptions({
+          visible: series.visible
+        });
+      }
     });
   }
 
@@ -322,8 +425,16 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Convertir las fechas al formato esperado por el gráfico
   private getTimeForSeries(momentObj: moment.Moment): number {
-    // return Math.floor(momentObj.valueOf() / 1000) as UTCTimestamp;
-    // Substract 4 hours to the date
     return Math.floor((momentObj.valueOf() - 4 * 60 * 60 * 1000) / 1000) as UTCTimestamp;
+  }
+
+  // Alternar visibilidad de una serie individual
+  toggleSeries(seriesId: string) {
+    const series = this.series.find(s => s.id === seriesId);
+    if (!series) return;
+
+    // Permitir ocultar cualquier serie, incluidas las series totales
+    series.visible = !series.visible;
+    this.updateSeriesVisibility();
   }
 }

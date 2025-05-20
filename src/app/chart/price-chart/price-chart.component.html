@@ -9,42 +9,40 @@
     <!-- Selector de rango de fechas -->
     <app-date-range-selector (dateRangeChanged)="onDateRangeChanged($event)"></app-date-range-selector>
 
-    <!-- Opciones de configuración -->
-    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-      <div class="flex flex-wrap items-center gap-3">
-        <mat-form-field class="w-32">
-          <mat-label>Tema</mat-label>
-          <mat-select [(ngModel)]="settings.theme" (selectionChange)="updateChartSettings()">
-            <mat-option *ngFor="let option of themeOptions" [value]="option.value">
-              {{option.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field class="w-32">
-          <mat-label>Unidad</mat-label>
-          <mat-select [(ngModel)]="settings.timeUnit" (selectionChange)="loadChartData()">
-            <mat-option *ngFor="let option of timeUnitOptions" [value]="option.value">
-              {{option.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+    <!-- Series individuales -->
+    <div class="flex flex-wrap gap-4 mb-4">
+      <!-- Monitor Series -->
+      <div class="flex-1 min-w-[300px]">
+        <h3 class="text-lg font-semibold mb-2">Monitor</h3>
+        <div class="flex flex-wrap gap-2">
+          <mat-chip-listbox multiple selectable="true">
+            <mat-chip-option
+              *ngFor="let s of series | filter:'type':'monitor'"
+              [selected]="s.visible"
+              [color]="s.isTotal ? 'primary' : undefined"
+              (click)="toggleSeries(s.id)"
+              [matTooltip]="'Tasa: ' + s.name">
+              {{s.name}}
+            </mat-chip-option>
+          </mat-chip-listbox>
+        </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <mat-slide-toggle
-          [(ngModel)]="settings.showMonitor"
-          (change)="updateChartSettings()"
-          color="primary">
-          Monitor
-        </mat-slide-toggle>
-
-        <mat-slide-toggle
-          [(ngModel)]="settings.showExchange"
-          (change)="updateChartSettings()"
-          color="warn">
-          Exchange
-        </mat-slide-toggle>
+      <!-- Exchange Series -->
+      <div class="flex-1 min-w-[300px]">
+        <h3 class="text-lg font-semibold mb-2">Exchange</h3>
+        <div class="flex flex-wrap gap-2">
+          <mat-chip-listbox multiple selectable="true">
+            <mat-chip-option
+              *ngFor="let s of series | filter:'type':'exchange'"
+              [selected]="s.visible"
+              [color]="s.isTotal ? 'warn' : undefined"
+              (click)="toggleSeries(s.id)"
+              [matTooltip]="'Tasa: ' + s.name">
+              {{s.name}}
+            </mat-chip-option>
+          </mat-chip-listbox>
+        </div>
       </div>
     </div>
 
