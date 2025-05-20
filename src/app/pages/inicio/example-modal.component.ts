@@ -64,7 +64,7 @@ interface ComparisonData {
             <!-- Columna Monitor Total -->
             <ng-container matColumnDef="monitorTotal">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-                <div>Monitor</div>
+                <div>Mon</div>
               </th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 <div>{{element.monitorTotal | number:'1.2-2'}}</div>
@@ -75,7 +75,7 @@ interface ComparisonData {
             <!-- Columna Exchange Total -->
             <ng-container matColumnDef="exchangeTotal">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-                <div>Exchange</div>
+                <div>Exch</div>
               </th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 <div>{{element.exchangeTotal | number:'1.2-2'}}</div>
@@ -158,7 +158,8 @@ interface ComparisonData {
             <ng-container matColumnDef="eldoradoMonitorRate">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                {{element.detail.monitorRate | number:'1.2-2'}}
+                <div>{{element.detail.monitorRate | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.monitorDate.split(' ')[1] }}</div>
               </td>
             </ng-container>
 
@@ -166,7 +167,8 @@ interface ComparisonData {
             <ng-container matColumnDef="eldoradoExchangeRate">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                {{element.detail.exchangeRate | number:'1.2-2'}}
+                <div>{{element.detail.exchangeRate | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.exchangeDate.split(' ')[1] }}</div>
               </td>
             </ng-container>
 
@@ -204,7 +206,8 @@ interface ComparisonData {
             <ng-container matColumnDef="sykloMonitorRate">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                {{element.detail.monitorRate | number:'1.2-2'}}
+                <div>{{element.detail.monitorRate | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.monitorDate.split(' ')[1] }}</div>
               </td>
             </ng-container>
 
@@ -212,7 +215,8 @@ interface ComparisonData {
             <ng-container matColumnDef="sykloExchangeRate">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                {{element.detail.exchangeRate | number:'1.2-2'}}
+                <div>{{element.detail.exchangeRate | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.exchangeDate.split(' ')[1] }}</div>
               </td>
             </ng-container>
 
@@ -250,7 +254,8 @@ interface ComparisonData {
             <ng-container matColumnDef="yadioMonitorRate">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                {{element.detail.monitorRate | number:'1.2-2'}}
+                <div>{{element.detail.monitorRate | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.monitorDate.split(' ')[1] }}</div>
               </td>
             </ng-container>
 
@@ -258,7 +263,8 @@ interface ComparisonData {
             <ng-container matColumnDef="yadioExchangeRate">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                {{element.detail.exchangeRate | number:'1.2-2'}}
+                <div>{{element.detail.exchangeRate | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.exchangeDate.split(' ')[1] }}</div>
               </td>
             </ng-container>
 
@@ -467,7 +473,7 @@ export class ExampleModalComponent implements OnInit {
           difference,
           diffPercentage,
           details,
-          formattedDate: moment(monitorRate.datetime).format('MMMM DD dddd'),
+          formattedDate: moment(monitorRate.datetime).format('DD/MM'),
         };
       }));
 
@@ -477,16 +483,22 @@ export class ExampleModalComponent implements OnInit {
       // Filtrar datos para cada fuente
       this.eldoradoDataSource = this.dataSource.map(item => ({
         formattedDate: item.formattedDate,
+        monitorDate: item.monitorDate,
+        exchangeDate: item.exchangeDate,
         detail: item.details.find(d => d.source === 'Eldorado')
       })).filter(item => item.detail !== undefined);
 
       this.sykloDataSource = this.dataSource.map(item => ({
         formattedDate: item.formattedDate,
+        monitorDate: item.monitorDate,
+        exchangeDate: item.exchangeDate,
         detail: item.details.find(d => d.source === 'Syklo')
       })).filter(item => item.detail !== undefined);
 
       this.yadioDataSource = this.dataSource.map(item => ({
         formattedDate: item.formattedDate,
+        monitorDate: item.monitorDate,
+        exchangeDate: item.exchangeDate,
         detail: item.details.find(d => d.source === 'Yadio')
       })).filter(item => item.detail !== undefined);
 

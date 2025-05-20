@@ -453,7 +453,7 @@ export class InicioComponent implements OnInit {
 
   openModal() {
     this.dialog.open(ExampleModalComponent, {
-      width: '80%',
+      width: '95%',
       data: { /* Puedes pasar datos aquí si es necesario */ }
     });
   }
