@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1747704779843,
+  "timestamp": 1747754052798,
   "index": "/monitor-dolar/index.html",
   "assetGroups": [
     {
@@ -19,7 +19,7 @@
         "/monitor-dolar/chunk-VQKZEU72.js",
         "/monitor-dolar/favicon.ico",
         "/monitor-dolar/index.html",
-        "/monitor-dolar/main-32UMG563.js",
+        "/monitor-dolar/main-WYGYNHK3.js",
         "/monitor-dolar/polyfills-FFHMD2TL.js",
         "/monitor-dolar/styles-ZSXERGK6.css"
       ],
@@ -49,11 +49,7 @@
   "dataGroups": [
     {
       "name": "supabase-api-performance",
-      "patterns": [
-        "https:\\/\\/jdfkckuzxofrecysgdhm\\.supabase\\.co\\/rest\\/v1\\/exchange_rates[^/]*",
-        "https:\\/\\/jdfkckuzxofrecysgdhm\\.supabase\\.co\\/rest\\/v1\\/monitor_rates[^/]*",
-        "https:\\/\\/jdfkckuzxofrecysgdhm\\.supabase\\.co\\/rest\\/v1\\/bcv_rates[^/]*"
-      ],
+      "patterns": [],
       "strategy": "performance",
       "maxSize": 100,
       "maxAge": 3600000,
@@ -81,8 +77,8 @@
     "/monitor-dolar/icons/icon-512x512.png": "5e45e1740dc146b5efc15f1dfcedc473057a5090",
     "/monitor-dolar/icons/icon-72x72.png": "73c4f77002b79b2ec57481ebdf3a2e704a231287",
     "/monitor-dolar/icons/icon-96x96.png": "47a073f2f14ad41f4aef6501e8c966b276083c1c",
-    "/monitor-dolar/index.html": "606c2c3908182fb170292577c36f093c2cb67def",
-    "/monitor-dolar/main-32UMG563.js": "234a630fe42b71f95f93182f6e91d685578d6711",
+    "/monitor-dolar/index.html": "63324cceea1ed528d2fb87fcdeb60af150c5b6d3",
+    "/monitor-dolar/main-WYGYNHK3.js": "20c0f5094016db91f4e7fc03c50a59d48b049ff1",
     "/monitor-dolar/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/monitor-dolar/styles-ZSXERGK6.css": "fc8406ddeaad62ddad3f0decfbdd32741520cd0f"
   },
