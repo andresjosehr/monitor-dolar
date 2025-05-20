@@ -13,6 +13,9 @@ import { PriceChartComponent } from '../../chart/price-chart/price-chart.compone
 import { CurrencyCalculatorComponent } from '../../components/currency-calculator/currency-calculator.component';
 import { PwaPromptComponent } from '../../components/pwa-prompt/pwa-prompt.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { ExampleModalComponent } from './example-modal.component';
 
 type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
 type MonitorRate = Database['public']['Tables']['monitor_rates']['Row'];
@@ -79,7 +82,9 @@ interface BinanceComparison {
     PriceChartComponent,
     CurrencyCalculatorComponent,
     PwaPromptComponent,
-    MatTabsModule
+    MatTabsModule,
+    MatDialogModule,
+    MatExpansionModule
   ],
   styles: [
     `
@@ -122,7 +127,10 @@ export class InicioComponent implements OnInit {
   loadingExchange = true;
   loadingBcv = true;
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private dialog: MatDialog
+  ) {
     moment.locale('es');
   }
 
@@ -441,5 +449,12 @@ export class InicioComponent implements OnInit {
 
     this.loadingComparison = false;
     this.loadingComparison2 = false;
+  }
+
+  openModal() {
+    this.dialog.open(ExampleModalComponent, {
+      width: '80%',
+      data: { /* Puedes pasar datos aquí si es necesario */ }
+    });
   }
 }
