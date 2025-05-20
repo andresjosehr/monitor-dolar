@@ -50,7 +50,7 @@ interface ComparisonData {
         <mat-spinner></mat-spinner>
       </div>
 
-      <table *ngIf="!loading" mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8 w-full !bg-transparent">
+      <table *ngIf="!loading" mat-table [dataSource]="dataSource" multiTemplateDataRows class="w-full !bg-transparent">
         <!-- Columna Fecha -->
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
@@ -60,7 +60,7 @@ interface ComparisonData {
         <!-- Columna Monitor Total -->
         <ng-container matColumnDef="monitorTotal">
           <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-            <div>Monitor Total</div>
+            <div>Monitor</div>
             <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].monitorDate.split(' ')[1] }}</div>
           </th>
           <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
@@ -72,7 +72,7 @@ interface ComparisonData {
         <!-- Columna Exchange Total -->
         <ng-container matColumnDef="exchangeTotal">
           <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-            <div>Exchange Total</div>
+            <div>Exchange</div>
             <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].exchangeDate.split(' ')[1] }}</div>
           </th>
           <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
@@ -98,12 +98,8 @@ interface ComparisonData {
           <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
             <div class="example-element-detail"
                 [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-              <div class="inner-table">
-                <div class="date-row">
-                  <div>Monitor: {{element.monitorDate}}</div>
-                  <div>Exchange: {{element.exchangeDate}}</div>
-                </div>
-                <table mat-table [dataSource]="element.details">
+              <div>
+                <table mat-table [dataSource]="element.details" class="mb-6">
                   <ng-container matColumnDef="source">
                     <th mat-header-cell *matHeaderCellDef>Fuente</th>
                     <td mat-cell *matCellDef="let detail">{{detail.source}}</td>
@@ -121,13 +117,16 @@ interface ComparisonData {
 
                   <ng-container matColumnDef="difference">
                     <th mat-header-cell *matHeaderCellDef>Diferencia</th>
-                    <td mat-cell *matCellDef="let detail" [ngClass]="{'negative': detail.difference < 0, 'positive': detail.difference > 0}">
-                      {{detail.difference | number:'1.2-2'}} ({{detail.diffPercentage | number:'1.2-2'}}%)
+                    <td mat-cell *matCellDef="let detail"
+                        [ngClass]="{'text-rose-500': detail.difference < 0, 'text-emerald-500': detail.difference > 0, 'text-gray-500': detail.difference === 0}">
+                      <b style="white-space: nowrap;">{{ detail.difference > 0 ? "▲" : (detail.difference < 0 ? "▼" : "=") }}
+                        {{detail.difference | number:'1.2-2'}} / {{detail.diffPercentage | number:'1.2-2'}}%
+                      </b>
                     </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="detailColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: detailColumns;"></tr>
+                  <tr mat-row *matRowDef="let row; columns: detailColumns;" class="!h-10"></tr>
                 </table>
               </div>
             </div>
@@ -157,10 +156,6 @@ interface ComparisonData {
     </mat-dialog-actions>
   `,
   styles: [`
-    table {
-      width: 100%;
-    }
-
     tr.example-detail-row {
       height: 0;
     }
@@ -172,10 +167,6 @@ interface ComparisonData {
     tr.example-element-row:not(.example-expanded-row):active {
       background: #efefef;
     }
-
-    // .example-element-row td {
-    //   border-bottom-width: 0;
-    // }
 
     .example-element-detail {
       overflow: hidden;
