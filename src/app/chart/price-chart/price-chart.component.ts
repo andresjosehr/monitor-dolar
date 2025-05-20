@@ -97,7 +97,8 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
       mkfrontera: '#3F51B5',
       syklo: '#009688',
       usdtbnbvzla: '#795548',
-      yadio: '#607D8B'
+      yadio: '#607D8B',
+      avg: '#000000'
     },
     exchange: {
       total: '#FF6D00',
@@ -212,7 +213,8 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
           { id: 'mkfrontera', name: 'MK Frontera' },
           { id: 'syklo', name: 'Syklo' },
           { id: 'usdtbnbvzla', name: 'USDT BNB VZLA' },
-          { id: 'yadio', name: 'Yadio' }
+          { id: 'yadio', name: 'Yadio' },
+          // { id: 'avg', name: 'Promedio' }
         ];
 
         monitorFields

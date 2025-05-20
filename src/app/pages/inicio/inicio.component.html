@@ -16,7 +16,7 @@
       <mat-card class="min-h-full shadow-md !p-4 md:!p-6">
 
         <mat-tab-group>
-          <mat-tab label="Primero">
+          <mat-tab label="Actual">
             <div class="mt-5">
             <div *ngIf="loadingComparison" class="spinner-container ">
               <mat-spinner diameter="40"></mat-spinner>
@@ -108,7 +108,7 @@
             </ng-container>
           </div>
         </mat-tab>
-        <mat-tab label="Segundo">
+        <mat-tab label="Anterior">
           <div class="mt-5">
             <ng-container *ngIf="!loadingComparison2">
               <mat-card-header class="!p-0" *ngIf="combinedRates2.length > 0">
@@ -296,82 +296,167 @@
         </div>
 
         <ng-container *ngIf="!loadingExchange">
-          <mat-card-header class="!p-0" *ngIf="exchangeComparisons.length > 0">
-            <div class="flex justify-between items-start w-full mb-4">
-              <mat-card-title>
-                <div>Tasa ahora</div>
-                <div class="text-sm md:text-sm capitalize text-gray-500">{{exchangeComparisons[0].last_update.format('dddd HH:mm')}}</div>
-              </mat-card-title>
-              <div class="py-2 px-3 rounded-md bg-blue-950 text-center">
-                <div class="font-bold text-white text-lg"> Bs. {{exchangeComparisons[0].current_rate | number : "1.2-2"}}</div>
-                <div
-                    [ngClass]="{
-                      'text-emerald-500': exchangeComparisons[0].diferencia > 0,
-                      'text-rose-500': exchangeComparisons[0].diferencia < 0,
-                      'text-gray-500': exchangeComparisons[0].diferencia === 0
-                    }"
-                    class="text-xs font-light">
-                      <b style="white-space: nowrap;">{{ exchangeComparisons[0].diferencia > 0 ? "▲" : (exchangeComparisons[0].diferencia < 0 ? "▼" : "=") }}
-                        {{ exchangeComparisons[0].diferencia | number : "1.2-2" }} / {{ exchangeComparisons[0].diferencia_porcentaje | number : "1.2-2" }}%
-                      </b>
-                </div>
+          <mat-tab-group>
+            <mat-tab label="Tasa ahora">
+              <div class="mt-4">
+                <mat-card-header class="!p-0" *ngIf="exchangeComparisons.length > 0">
+                  <div class="flex justify-between items-start w-full mb-4">
+                    <mat-card-title>
+                      <div>Tasa ahora</div>
+                      <div class="text-sm md:text-sm capitalize text-gray-500">{{exchangeComparisons[0].last_update.format('dddd HH:mm')}}</div>
+                    </mat-card-title>
+                    <div class="py-2 px-3 rounded-md bg-blue-950 text-center">
+                      <div class="font-bold text-white text-lg"> Bs. {{exchangeComparisons[0].current_rate | number : "1.2-2"}}</div>
+                      <div
+                          [ngClass]="{
+                            'text-emerald-500': exchangeComparisons[0].diferencia > 0,
+                            'text-rose-500': exchangeComparisons[0].diferencia < 0,
+                            'text-gray-500': exchangeComparisons[0].diferencia === 0
+                          }"
+                          class="text-xs font-light">
+                            <b style="white-space: nowrap;">{{ exchangeComparisons[0].diferencia > 0 ? "▲" : (exchangeComparisons[0].diferencia < 0 ? "▼" : "=") }}
+                              {{ exchangeComparisons[0].diferencia | number : "1.2-2" }} / {{ exchangeComparisons[0].diferencia_porcentaje | number : "1.2-2" }}%
+                            </b>
+                      </div>
+                    </div>
+                  </div>
+                </mat-card-header>
+                <mat-card-content class="!p-0">
+                  <div class="w-full max-h-64 overflow-y-auto" *ngIf="exchangeComparisons.length > 0">
+                    <table mat-table [dataSource]="exchangeComparisons" class="w-full !bg-transparent">
+                      <ng-container matColumnDef="exchange">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">{{ element.exchange }}</td>
+                      </ng-container>
+
+
+                      <ng-container matColumnDef="previous_rate">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                          <div>Tasa Anterior</div>
+                          <div class="text-xs text-gray-500">{{ exchangeComparisons[0].previous_update.format('dddd HH:mm') }}</div>
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                          {{ element.previous_rate | number : "1.2-2" }}
+                        </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="current_rate">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                          <div>Tasa Actual</div>
+                          <div class="text-xs text-gray-500">{{ exchangeComparisons[0].last_update.format('dddd HH:mm') }}</div>
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                          {{ element.current_rate | number : "1.2-2" }}
+                        </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="diferencia">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diferencia</th>
+                        <td mat-cell *matCellDef="let element"
+                            [ngClass]="{
+                              'text-emerald-500': element.diferencia > 0,
+                              'text-rose-500': element.diferencia < 0,
+                              'text-gray-500': element.diferencia === 0
+                            }"
+                            class="py-3 !border-gray-300 !text-sm md:!text-sm">
+                          <b style="white-space: nowrap;">{{ element.diferencia > 0 ? "▲" : (element.diferencia < 0 ? "▼" : "=") }}
+                            {{ element.diferencia | number : "1.2-2" }} / {{ element.diferencia_porcentaje | number : "1.2-2" }}%
+                          </b>
+                        </td>
+                      </ng-container>
+
+                      <tr mat-header-row *matHeaderRowDef="exchangeColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: exchangeColumns"
+                          class="hover:bg-gray-200 transition-colors !h-10"
+                          [ngClass]="{
+                            '!bg-gray-300': row.exchange === 'Total'
+                          }">
+                      </tr>
+                    </table>
+                  </div>
+                </mat-card-content>
               </div>
-            </div>
-          </mat-card-header>
-          <mat-card-content class="!p-0">
-            <div class="w-full max-h-64 overflow-y-auto" *ngIf="exchangeComparisons.length > 0">
-              <table mat-table [dataSource]="exchangeComparisons" class="w-full !bg-transparent">
-                <ng-container matColumnDef="exchange">
-                  <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
-                  <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">{{ element.exchange }}</td>
-                </ng-container>
+            </mat-tab>
 
 
-                <ng-container matColumnDef="previous_rate">
-                  <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-                    <div>Tasa Anterior</div>
-                    <div class="text-xs text-gray-500">{{ exchangeComparisons[0].previous_update.format('dddd HH:mm') }}</div>
-                  </th>
-                  <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                    {{ element.previous_rate | number : "1.2-2" }}
-                  </td>
-                </ng-container>
 
-                <ng-container matColumnDef="current_rate">
-                  <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-                    <div>Tasa Actual</div>
-                    <div class="text-xs text-gray-500">{{ exchangeComparisons[0].last_update.format('dddd HH:mm') }}</div>
-                  </th>
-                  <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-                    {{ element.current_rate | number : "1.2-2" }}
-                  </td>
-                </ng-container>
 
-                <ng-container matColumnDef="diferencia">
-                  <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diferencia</th>
-                  <td mat-cell *matCellDef="let element"
-                      [ngClass]="{
-                        'text-emerald-500': element.diferencia > 0,
-                        'text-rose-500': element.diferencia < 0,
-                        'text-gray-500': element.diferencia === 0
-                      }"
-                      class="py-3 !border-gray-300 !text-sm md:!text-sm">
-                    <b style="white-space: nowrap;">{{ element.diferencia > 0 ? "▲" : (element.diferencia < 0 ? "▼" : "=") }}
-                      {{ element.diferencia | number : "1.2-2" }} / {{ element.diferencia_porcentaje | number : "1.2-2" }}%
-                    </b>
-                  </td>
-                </ng-container>
+            <mat-tab label="Binance">
+              <div class="mt-4">
+                <mat-card-header class="!p-0" *ngIf="binanceComparisons.length > 0">
+                  <div class="flex justify-between items-start w-full mb-4">
+                    <mat-card-title>
+                      <div>Binance</div>
+                      <div class="text-sm md:text-sm capitalize text-gray-500">{{binanceComparisons[0].last_update.format('dddd HH:mm')}}</div>
+                    </mat-card-title>
+                    <div class="py-2 px-3 rounded-md bg-blue-950 text-center">
+                      <div class="font-bold text-white text-lg"> Bs. {{binanceComparisons[0].binance_rate | number : "1.2-2"}}</div>
 
-                <tr mat-header-row *matHeaderRowDef="exchangeColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: exchangeColumns"
-                    class="hover:bg-gray-200 transition-colors !h-10"
-                    [ngClass]="{
-                      '!bg-gray-300': row.exchange === 'Total'
-                    }">
-                </tr>
-              </table>
-            </div>
-          </mat-card-content>
+                    </div>
+                  </div>
+                </mat-card-header>
+                <mat-card-content class="!p-0">
+                  <div class="w-full max-h-64 overflow-y-auto" *ngIf="binanceComparisons.length > 0">
+                    <table mat-table [dataSource]="binanceComparisons" class="w-full !bg-transparent">
+                      <ng-container matColumnDef="exchange">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">{{ element.exchange }}</td>
+                      </ng-container>
+
+
+                      <ng-container matColumnDef="previous_rate">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                          <div>Exchange</div>
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                          {{ element.current_rate | number : "1.2-2" }}
+                        </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="current_rate">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                          <div>Binance</div>
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                          {{ element.binance_rate | number : "1.2-2" }}
+                        </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="diferencia">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diferencia</th>
+                        <td mat-cell *matCellDef="let element"
+                            [ngClass]="{
+                              'text-emerald-500': element.diferencia > 0,
+                              'text-rose-500': element.diferencia < 0,
+                              'text-gray-500': element.diferencia === 0
+                            }"
+                            class="py-3 !border-gray-300 !text-sm md:!text-sm">
+                          <b style="white-space: nowrap;">{{ element.diferencia > 0 ? "▲" : (element.diferencia < 0 ? "▼" : "=") }}
+                            {{ element.diferencia | number : "1.2-2" }} / {{ element.diferencia_porcentaje | number : "1.2-2" }}%
+                          </b>
+                        </td>
+                      </ng-container>
+
+
+                      <ng-container matColumnDef="last_update">
+                        <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                          <div>Ultma Actualización</div>
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize">
+                          {{ element.last_update.format('dddd HH:mm') }}
+                        </td>
+                      </ng-container>
+
+                      <tr mat-header-row *matHeaderRowDef="binanceColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: binanceColumns"
+                          class="hover:bg-gray-200 transition-colors !h-10">
+                      </tr>
+                    </table>
+                  </div>
+                </mat-card-content>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
 
         </ng-container>
       </mat-card>
@@ -456,6 +541,15 @@
         </ng-container>
       </mat-card>
     </div>
+
+
+
+
+
+
+
+
+
   </div>
 
   <div class="flex flex-col gap-4 md:flex-row mt-6" >

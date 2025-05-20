@@ -56,6 +56,14 @@ interface BcvRateComparison {
   diferencia_porcentaje: number;
 }
 
+interface BinanceComparison {
+  exchange: string;
+  current_rate: number;
+  binance_rate: number;
+  diferencia: number;
+  diferencia_porcentaje: number;
+  last_update: moment.Moment;
+}
 @Component({
   selector: 'app-inicio',
   standalone: true,
@@ -99,10 +107,12 @@ export class InicioComponent implements OnInit {
   exchangeComparisons: ExchangeRateComparison[] = [];
   monitorComparisons: MonitorRateComparison[] = [];
   bcvComparisons: BcvRateComparison[] = [];
+  binanceComparisons: BinanceComparison[] = [];
 
   displayedColumns: string[] = ['exchange', 'monitor_rate', 'exchange_rate', 'diferencia'];
   exchangeColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
   monitorColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia'];
+  binanceColumns: string[] = ['exchange', 'previous_rate', 'current_rate', 'diferencia', 'last_update'];
   bcvColumns: string[] = ['date', 'rate', 'diferencia'];
 
   // Loading states
@@ -120,10 +130,47 @@ export class InicioComponent implements OnInit {
     await this.loadMonitorRates();
     await this.loadExchangeRates();
     await this.loadBcvRates();
+    this.loadBinanceComparisons();
     this.combineRates();
     this.processExchangeRates();
     this.processMonitorRates();
     this.processBcvRates();
+  }
+
+  async loadBinanceComparisons() {
+    // Combine exchangeRates.binance_rate with:
+    // 1) Last monitorRate.total_rate
+    // 2) Last monitorRate.avg_rate
+    // 3) Last bcvRate.bcv_rate
+
+    //build data for table
+    this.binanceComparisons = [
+      {
+        exchange: 'Monitor',
+        current_rate: this.monitorRates[0].total_rate,
+        binance_rate: this.exchangeRates[0].binance_rate,
+        diferencia: this.exchangeRates[0].binance_rate-this.monitorRates[0].total_rate,
+        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.monitorRates[0].total_rate) / this.monitorRates[0].total_rate) * 100,
+        last_update: moment(this.monitorRates[0].datetime)
+      },
+      {
+        exchange: 'Promedio',
+        current_rate: this.monitorRates[0].avg_rate,
+        binance_rate: this.exchangeRates[0].binance_rate,
+        diferencia: this.exchangeRates[0].binance_rate-this.monitorRates[0].avg_rate,
+        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.monitorRates[0].avg_rate) / this.monitorRates[0].avg_rate) * 100,
+        last_update: moment(this.monitorRates[0].datetime)
+      },
+      {
+        exchange: 'BCV',
+        current_rate: this.bcvRates[0].bcv_rate,
+        binance_rate: this.exchangeRates[0].binance_rate,
+        diferencia: this.exchangeRates[0].binance_rate-this.bcvRates[0].bcv_rate,
+        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.bcvRates[0].bcv_rate) / this.bcvRates[0].bcv_rate) * 100,
+        last_update: moment(this.bcvRates[0].created_at)
+      }
+    ];
+
   }
 
   async loadExchangeRates() {

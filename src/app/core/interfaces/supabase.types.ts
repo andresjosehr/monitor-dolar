@@ -11,7 +11,7 @@ export type Database = {
     Tables: {
       bcv_rates: {
         Row: {
-          bcv_rate: number | null
+          bcv_rate: number
           created_at: string | null
           id: number
         }
@@ -60,6 +60,7 @@ export type Database = {
       monitor_rates: {
         Row: {
           airtm_rate: number
+          avg_rate: number
           billeterap2p_rate: number
           cambiosrya_rate: number
           created_at: string | null
@@ -74,6 +75,7 @@ export type Database = {
         }
         Insert: {
           airtm_rate: number
+          avg_rate?: number | null
           billeterap2p_rate: number
           cambiosrya_rate: number
           created_at?: string | null
@@ -88,6 +90,7 @@ export type Database = {
         }
         Update: {
           airtm_rate?: number
+          avg_rate?: number | null
           billeterap2p_rate?: number
           cambiosrya_rate?: number
           created_at?: string | null
