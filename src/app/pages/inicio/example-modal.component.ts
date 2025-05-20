@@ -65,7 +65,6 @@ interface ComparisonData {
             <ng-container matColumnDef="monitorTotal">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
                 <div>Monitor</div>
-                <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].monitorDate.split(' ')[1] }}</div>
               </th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 <div>{{element.monitorTotal | number:'1.2-2'}}</div>
@@ -77,7 +76,6 @@ interface ComparisonData {
             <ng-container matColumnDef="exchangeTotal">
               <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
                 <div>Exchange</div>
-                <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].exchangeDate.split(' ')[1] }}</div>
               </th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 <div>{{element.exchangeTotal | number:'1.2-2'}}</div>
@@ -158,7 +156,7 @@ interface ComparisonData {
 
             <!-- Columna Monitor Eldorado -->
             <ng-container matColumnDef="eldoradoMonitorRate">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor (Eldorado)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 {{element.detail.monitorRate | number:'1.2-2'}}
               </td>
@@ -166,7 +164,7 @@ interface ComparisonData {
 
             <!-- Columna Exchange Eldorado -->
             <ng-container matColumnDef="eldoradoExchangeRate">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange (Eldorado)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 {{element.detail.exchangeRate | number:'1.2-2'}}
               </td>
@@ -174,7 +172,7 @@ interface ComparisonData {
 
             <!-- Columna Diferencia Eldorado -->
             <ng-container matColumnDef="eldoradoDifference">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff (Eldorado)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff</th>
               <td mat-cell *matCellDef="let element"
                   [ngClass]="{
                     'text-rose-500': element.detail.difference < 0,
@@ -204,7 +202,7 @@ interface ComparisonData {
 
             <!-- Columna Monitor Syklo -->
             <ng-container matColumnDef="sykloMonitorRate">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor (Syklo)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 {{element.detail.monitorRate | number:'1.2-2'}}
               </td>
@@ -212,7 +210,7 @@ interface ComparisonData {
 
             <!-- Columna Exchange Syklo -->
             <ng-container matColumnDef="sykloExchangeRate">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange (Syklo)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 {{element.detail.exchangeRate | number:'1.2-2'}}
               </td>
@@ -220,7 +218,7 @@ interface ComparisonData {
 
             <!-- Columna Diferencia Syklo -->
             <ng-container matColumnDef="sykloDifference">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff (Syklo)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff</th>
               <td mat-cell *matCellDef="let element"
                   [ngClass]="{
                     'text-rose-500': element.detail.difference < 0,
@@ -250,7 +248,7 @@ interface ComparisonData {
 
             <!-- Columna Monitor Yadio -->
             <ng-container matColumnDef="yadioMonitorRate">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor (Yadio)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 {{element.detail.monitorRate | number:'1.2-2'}}
               </td>
@@ -258,7 +256,7 @@ interface ComparisonData {
 
             <!-- Columna Exchange Yadio -->
             <ng-container matColumnDef="yadioExchangeRate">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange (Yadio)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange</th>
               <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
                 {{element.detail.exchangeRate | number:'1.2-2'}}
               </td>
@@ -266,7 +264,7 @@ interface ComparisonData {
 
             <!-- Columna Diferencia Yadio -->
             <ng-container matColumnDef="yadioDifference">
-              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff (Yadio)</th>
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff</th>
               <td mat-cell *matCellDef="let element"
                   [ngClass]="{
                     'text-rose-500': element.detail.difference < 0,
