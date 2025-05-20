@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1747754052798,
+  "timestamp": 1747759090237,
   "index": "/monitor-dolar/index.html",
   "assetGroups": [
     {
@@ -12,14 +12,14 @@
       },
       "urls": [
         "/monitor-dolar/chunk-AQT7K737.js",
+        "/monitor-dolar/chunk-KJHJBPJB.js",
         "/monitor-dolar/chunk-N2HYM3BR.js",
-        "/monitor-dolar/chunk-PHCXKMSF.js",
+        "/monitor-dolar/chunk-PCSR253R.js",
         "/monitor-dolar/chunk-R5HC3FKR.js",
         "/monitor-dolar/chunk-TWZW5B45.js",
-        "/monitor-dolar/chunk-VQKZEU72.js",
         "/monitor-dolar/favicon.ico",
         "/monitor-dolar/index.html",
-        "/monitor-dolar/main-WYGYNHK3.js",
+        "/monitor-dolar/main-TY7YRSVG.js",
         "/monitor-dolar/polyfills-FFHMD2TL.js",
         "/monitor-dolar/styles-ZSXERGK6.css"
       ],
@@ -62,11 +62,11 @@
   ],
   "hashTable": {
     "/monitor-dolar/chunk-AQT7K737.js": "7c3effe91f59f7a6ccd558d9b87c7c645f5e776b",
+    "/monitor-dolar/chunk-KJHJBPJB.js": "107e9ee85bfc94c9cd94ba3ce9efa7ea9a860478",
     "/monitor-dolar/chunk-N2HYM3BR.js": "d1876b675313522534dfb1fa4bb58c597d93d960",
-    "/monitor-dolar/chunk-PHCXKMSF.js": "ece97b26c0f3dbf59ffa5c9a5d832419ae09a966",
+    "/monitor-dolar/chunk-PCSR253R.js": "ad1ec9fc52f6f2226e94e39d0426ce2f0f92ec42",
     "/monitor-dolar/chunk-R5HC3FKR.js": "1286e5b8bc161692841fb05adce466ea20a6dc46",
     "/monitor-dolar/chunk-TWZW5B45.js": "08bf566d05ea9be3f559aa202c06eca5bde05111",
-    "/monitor-dolar/chunk-VQKZEU72.js": "306adedc0cd51db2e6e88f7a41953a2bae26f70e",
     "/monitor-dolar/favicon.ico": "ac8e587bb88a1e29cd00a85f0e0498074820a4f2",
     "/monitor-dolar/icons/icon-1024x1024.png": "78984ce6ffc071940bbf955a7c659ed036b51478",
     "/monitor-dolar/icons/icon-128x128.png": "034e4ae39e80843b3cad5f6407970f8682c783a6",
@@ -77,8 +77,8 @@
     "/monitor-dolar/icons/icon-512x512.png": "5e45e1740dc146b5efc15f1dfcedc473057a5090",
     "/monitor-dolar/icons/icon-72x72.png": "73c4f77002b79b2ec57481ebdf3a2e704a231287",
     "/monitor-dolar/icons/icon-96x96.png": "47a073f2f14ad41f4aef6501e8c966b276083c1c",
-    "/monitor-dolar/index.html": "63324cceea1ed528d2fb87fcdeb60af150c5b6d3",
-    "/monitor-dolar/main-WYGYNHK3.js": "20c0f5094016db91f4e7fc03c50a59d48b049ff1",
+    "/monitor-dolar/index.html": "9f59bed456b23cc628939c34b5e66e2b492d379e",
+    "/monitor-dolar/main-TY7YRSVG.js": "5c2ef5ad8209cac1f56ab53489c23f6dbb818de0",
     "/monitor-dolar/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/monitor-dolar/styles-ZSXERGK6.css": "fc8406ddeaad62ddad3f0decfbdd32741520cd0f"
   },
