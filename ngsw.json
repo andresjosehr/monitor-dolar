@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1747697407082,
+  "timestamp": 1747704779843,
   "index": "/monitor-dolar/index.html",
   "assetGroups": [
     {
@@ -19,9 +19,9 @@
         "/monitor-dolar/chunk-VQKZEU72.js",
         "/monitor-dolar/favicon.ico",
         "/monitor-dolar/index.html",
-        "/monitor-dolar/main-2LUVQCTY.js",
+        "/monitor-dolar/main-32UMG563.js",
         "/monitor-dolar/polyfills-FFHMD2TL.js",
-        "/monitor-dolar/styles-DBSCELJH.css"
+        "/monitor-dolar/styles-ZSXERGK6.css"
       ],
       "patterns": []
     },
@@ -81,10 +81,10 @@
     "/monitor-dolar/icons/icon-512x512.png": "5e45e1740dc146b5efc15f1dfcedc473057a5090",
     "/monitor-dolar/icons/icon-72x72.png": "73c4f77002b79b2ec57481ebdf3a2e704a231287",
     "/monitor-dolar/icons/icon-96x96.png": "47a073f2f14ad41f4aef6501e8c966b276083c1c",
-    "/monitor-dolar/index.html": "9c36b26dff6492994d9347255dcfbe316597f5a0",
-    "/monitor-dolar/main-2LUVQCTY.js": "e19d77a72a6ccd172dab44cf4e62bb7075b25064",
+    "/monitor-dolar/index.html": "606c2c3908182fb170292577c36f093c2cb67def",
+    "/monitor-dolar/main-32UMG563.js": "234a630fe42b71f95f93182f6e91d685578d6711",
     "/monitor-dolar/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
-    "/monitor-dolar/styles-DBSCELJH.css": "7342d279e120f36eadb58f2705c731b5ce082228"
+    "/monitor-dolar/styles-ZSXERGK6.css": "fc8406ddeaad62ddad3f0decfbdd32741520cd0f"
   },
   "navigationUrls": [
     {
