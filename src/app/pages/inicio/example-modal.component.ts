@@ -349,6 +349,13 @@ interface ComparisonData {
     ::ng-deep .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab {
       height: 20px;
     }
+    ::ng-deep{
+    @media (max-width: 768px) {
+       .mdc-data-table__cell {
+          padding: 0px 0px !important;
+        }
+    }
+    }
   `],
   animations: [
     trigger('detailExpand', [
