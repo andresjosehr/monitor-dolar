@@ -31,9 +31,7 @@
     {
       "name": "supabase-api-performance",
       "urls": [
-        "https://jdfkckuzxofrecysgdhm.supabase.co/rest/v1/exchange_rates*",
-        "https://jdfkckuzxofrecysgdhm.supabase.co/rest/v1/monitor_rates*",
-        "https://jdfkckuzxofrecysgdhm.supabase.co/rest/v1/bcv_rates*"
+
       ],
       "cacheConfig": {
         "strategy": "performance",
