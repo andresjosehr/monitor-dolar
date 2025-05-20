@@ -27,6 +27,7 @@ interface ComparisonData {
     difference: number;
     diffPercentage: number;
   }[];
+  formattedDate: string;
 }
 
 @Component({
@@ -49,24 +50,46 @@ interface ComparisonData {
         <mat-spinner></mat-spinner>
       </div>
 
-      <table *ngIf="!loading" mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+      <table *ngIf="!loading" mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8 w-full !bg-transparent">
+        <!-- Columna Fecha -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
+          <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize" style="white-space: nowrap;">{{element.formattedDate}}</td>
+        </ng-container>
+
         <!-- Columna Monitor Total -->
         <ng-container matColumnDef="monitorTotal">
-          <th mat-header-cell *matHeaderCellDef>Monitor Total</th>
-          <td mat-cell *matCellDef="let element">{{element.monitorTotal | number:'1.2-2'}}</td>
+          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+            <div>Monitor Total</div>
+            <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].monitorDate.split(' ')[1] }}</div>
+          </th>
+          <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+            <div>{{element.monitorTotal | number:'1.2-2'}}</div>
+            <div class="text-xs text-gray-500">{{ element.monitorDate.split(' ')[1] }}</div>
+          </td>
         </ng-container>
 
         <!-- Columna Exchange Total -->
         <ng-container matColumnDef="exchangeTotal">
-          <th mat-header-cell *matHeaderCellDef>Exchange Total</th>
-          <td mat-cell *matCellDef="let element">{{element.exchangeTotal | number:'1.2-2'}}</td>
+          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+            <div>Exchange Total</div>
+            <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].exchangeDate.split(' ')[1] }}</div>
+          </th>
+          <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+            <div>{{element.exchangeTotal | number:'1.2-2'}}</div>
+            <div class="text-xs text-gray-500">{{ element.exchangeDate.split(' ')[1] }}</div>
+          </td>
         </ng-container>
 
         <!-- Columna Diferencia -->
         <ng-container matColumnDef="difference">
-          <th mat-header-cell *matHeaderCellDef>Diferencia</th>
-          <td mat-cell *matCellDef="let element" [ngClass]="{'negative': element.difference < 0, 'positive': element.difference > 0}">
-            {{element.difference | number:'1.2-2'}} ({{element.diffPercentage | number:'1.2-2'}}%)
+          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff</th>
+          <td mat-cell *matCellDef="let element"
+              [ngClass]="{'text-rose-500': element.difference < 0, 'text-emerald-500': element.difference > 0, 'text-gray-500': element.difference === 0}"
+              class="py-3 !border-gray-300 !text-sm md:!text-sm">
+            <b style="white-space: nowrap;">{{ element.difference > 0 ? "▲" : (element.difference < 0 ? "▼" : "=") }}
+              {{element.difference | number:'1.2-2'}} / {{element.diffPercentage | number:'1.2-2'}}%
+            </b>
           </td>
         </ng-container>
 
@@ -113,7 +136,7 @@ interface ComparisonData {
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let element; columns: displayedColumns;"
-            class="example-element-row"
+            class="example-element-row hover:bg-gray-200 transition-colors !h-10"
             [class.example-expanded-row]="expandedElement === element"
             (click)="expandedElement = expandedElement === element ? null : element">
         </tr>
@@ -150,9 +173,9 @@ interface ComparisonData {
       background: #efefef;
     }
 
-    .example-element-row td {
-      border-bottom-width: 0;
-    }
+    // .example-element-row td {
+    //   border-bottom-width: 0;
+    // }
 
     .example-element-detail {
       overflow: hidden;
@@ -176,19 +199,16 @@ interface ComparisonData {
       min-height: 200px;
     }
 
-    .date-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
     .negative {
       color: #f44336;
     }
 
     .positive {
       color: #4caf50;
+    }
+
+    ::ng-deep .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab {
+      height: 20px;
     }
   `],
   animations: [
@@ -200,7 +220,7 @@ interface ComparisonData {
   ],
 })
 export class ExampleModalComponent implements OnInit {
-  displayedColumns: string[] = ['monitorTotal', 'exchangeTotal', 'difference'];
+  displayedColumns: string[] = ['date', 'monitorTotal', 'exchangeTotal', 'difference'];
   detailColumns: string[] = ['source', 'monitorRate', 'exchangeRate', 'difference'];
   expandedElement: ComparisonData | null = null;
   dataSource: ComparisonData[] = [];
@@ -305,7 +325,8 @@ export class ExampleModalComponent implements OnInit {
           exchangeTotal: exchangeRate.total_rate,
           difference,
           diffPercentage,
-          details
+          details,
+          formattedDate: moment(monitorRate.datetime).format('MMMM DD dddd'),
         };
       }));
 
