@@ -7,6 +7,7 @@ const bcvService          = require("./src/services/exchange/bcv.service");
 const yadioService        = require("./src/services/exchange/yadio.service");
 const sykloService        = require("./src/services/exchange/syklo.service");
 const monitorDolarService = require("./src/services/monitor/monitor-dolar.service");
+const supabase            = require("./src/config/supabase");
 
 program
   .command("bcvToBinance <usd-bcv-amount>")
@@ -183,6 +184,21 @@ program
       console.error("Error:", error.message);
     }
   });
+
+  program
+  .command("epa")
+  .description("")
+  .action(async () => {
+    const { lastRates, error } = await supabase
+    .from("exchange_rates")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+    console.log(lastRates);
+  });
+
+
 
 
 
