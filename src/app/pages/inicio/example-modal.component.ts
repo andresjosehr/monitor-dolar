@@ -11,6 +11,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DecimalPipe } from '@angular/common';
 import moment from 'moment';
+import { MatTabsModule } from '@angular/material/tabs';
 
 interface ComparisonData {
   id: number;
@@ -41,7 +42,8 @@ interface ComparisonData {
     MatButtonModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    DecimalPipe
+    DecimalPipe,
+    MatTabsModule
   ],
   template: `
     <h2 mat-dialog-title>Historial de Comparación</h2>
@@ -50,98 +52,240 @@ interface ComparisonData {
         <mat-spinner></mat-spinner>
       </div>
 
-      <table *ngIf="!loading" mat-table [dataSource]="dataSource" multiTemplateDataRows class="w-full !bg-transparent">
-        <!-- Columna Fecha -->
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
-          <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize" style="white-space: nowrap;">{{element.formattedDate}}</td>
-        </ng-container>
+      <mat-tab-group *ngIf="!loading">
+        <mat-tab label="Resumen">
+          <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="w-full !bg-transparent">
+            <!-- Columna Fecha -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize" style="white-space: nowrap;">{{element.formattedDate}}</td>
+            </ng-container>
 
-        <!-- Columna Monitor Total -->
-        <ng-container matColumnDef="monitorTotal">
-          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-            <div>Monitor</div>
-            <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].monitorDate.split(' ')[1] }}</div>
-          </th>
-          <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-            <div>{{element.monitorTotal | number:'1.2-2'}}</div>
-            <div class="text-xs text-gray-500">{{ element.monitorDate.split(' ')[1] }}</div>
-          </td>
-        </ng-container>
+            <!-- Columna Monitor Total -->
+            <ng-container matColumnDef="monitorTotal">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                <div>Monitor</div>
+                <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].monitorDate.split(' ')[1] }}</div>
+              </th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                <div>{{element.monitorTotal | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.monitorDate.split(' ')[1] }}</div>
+              </td>
+            </ng-container>
 
-        <!-- Columna Exchange Total -->
-        <ng-container matColumnDef="exchangeTotal">
-          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
-            <div>Exchange</div>
-            <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].exchangeDate.split(' ')[1] }}</div>
-          </th>
-          <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
-            <div>{{element.exchangeTotal | number:'1.2-2'}}</div>
-            <div class="text-xs text-gray-500">{{ element.exchangeDate.split(' ')[1] }}</div>
-          </td>
-        </ng-container>
+            <!-- Columna Exchange Total -->
+            <ng-container matColumnDef="exchangeTotal">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">
+                <div>Exchange</div>
+                <div class="text-xs text-gray-500" *ngIf="dataSource.length > 0">{{ dataSource[0].exchangeDate.split(' ')[1] }}</div>
+              </th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                <div>{{element.exchangeTotal | number:'1.2-2'}}</div>
+                <div class="text-xs text-gray-500">{{ element.exchangeDate.split(' ')[1] }}</div>
+              </td>
+            </ng-container>
 
-        <!-- Columna Diferencia -->
-        <ng-container matColumnDef="difference">
-          <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff</th>
-          <td mat-cell *matCellDef="let element"
-              [ngClass]="{'text-rose-500': element.difference < 0, 'text-emerald-500': element.difference > 0, 'text-gray-500': element.difference === 0}"
-              class="py-3 !border-gray-300 !text-sm md:!text-sm">
-            <b style="white-space: nowrap;">{{ element.difference > 0 ? "▲" : (element.difference < 0 ? "▼" : "=") }}
-              {{element.difference | number:'1.2-2'}} / {{element.diffPercentage | number:'1.2-2'}}%
-            </b>
-          </td>
-        </ng-container>
+            <!-- Columna Diferencia -->
+            <ng-container matColumnDef="difference">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff</th>
+              <td mat-cell *matCellDef="let element"
+                  [ngClass]="{'text-rose-500': element.difference < 0, 'text-emerald-500': element.difference > 0, 'text-gray-500': element.difference === 0}"
+                  class="py-3 !border-gray-300 !text-sm md:!text-sm">
+                <b style="white-space: nowrap;">{{ element.difference > 0 ? "▲" : (element.difference < 0 ? "▼" : "=") }}
+                  {{element.difference | number:'1.2-2'}} / {{element.diffPercentage | number:'1.2-2'}}%
+                </b>
+              </td>
+            </ng-container>
 
-        <!-- Columna de Detalles Expandidos -->
-        <ng-container matColumnDef="expandedDetail">
-          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-            <div class="example-element-detail"
-                [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-              <div>
-                <table mat-table [dataSource]="element.details" class="mb-6">
-                  <ng-container matColumnDef="source">
-                    <th mat-header-cell *matHeaderCellDef>Fuente</th>
-                    <td mat-cell *matCellDef="let detail">{{detail.source}}</td>
-                  </ng-container>
+            <!-- Columna de Detalles Expandidos -->
+            <ng-container matColumnDef="expandedDetail">
+              <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+                <div class="example-element-detail"
+                    [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div>
+                    <table mat-table [dataSource]="element.details" class="mb-6">
+                      <ng-container matColumnDef="source">
+                        <th mat-header-cell *matHeaderCellDef>Fuente</th>
+                        <td mat-cell *matCellDef="let detail">{{detail.source}}</td>
+                      </ng-container>
 
-                  <ng-container matColumnDef="monitorRate">
-                    <th mat-header-cell *matHeaderCellDef>Monitor</th>
-                    <td mat-cell *matCellDef="let detail">{{detail.monitorRate | number:'1.2-2'}}</td>
-                  </ng-container>
+                      <ng-container matColumnDef="monitorRate">
+                        <th mat-header-cell *matHeaderCellDef>Monitor</th>
+                        <td mat-cell *matCellDef="let detail">{{detail.monitorRate | number:'1.2-2'}}</td>
+                      </ng-container>
 
-                  <ng-container matColumnDef="exchangeRate">
-                    <th mat-header-cell *matHeaderCellDef>Exchange</th>
-                    <td mat-cell *matCellDef="let detail">{{detail.exchangeRate | number:'1.2-2'}}</td>
-                  </ng-container>
+                      <ng-container matColumnDef="exchangeRate">
+                        <th mat-header-cell *matHeaderCellDef>Exchange</th>
+                        <td mat-cell *matCellDef="let detail">{{detail.exchangeRate | number:'1.2-2'}}</td>
+                      </ng-container>
 
-                  <ng-container matColumnDef="difference">
-                    <th mat-header-cell *matHeaderCellDef>Diferencia</th>
-                    <td mat-cell *matCellDef="let detail"
-                        [ngClass]="{'text-rose-500': detail.difference < 0, 'text-emerald-500': detail.difference > 0, 'text-gray-500': detail.difference === 0}">
-                      <b style="white-space: nowrap;">{{ detail.difference > 0 ? "▲" : (detail.difference < 0 ? "▼" : "=") }}
-                        {{detail.difference | number:'1.2-2'}} / {{detail.diffPercentage | number:'1.2-2'}}%
-                      </b>
-                    </td>
-                  </ng-container>
+                      <ng-container matColumnDef="difference">
+                        <th mat-header-cell *matHeaderCellDef>Diferencia</th>
+                        <td mat-cell *matCellDef="let detail"
+                            [ngClass]="{'text-rose-500': detail.difference < 0, 'text-emerald-500': detail.difference > 0, 'text-gray-500': detail.difference === 0}">
+                          <b style="white-space: nowrap;">{{ detail.difference > 0 ? "▲" : (detail.difference < 0 ? "▼" : "=") }}
+                            {{detail.difference | number:'1.2-2'}} / {{detail.diffPercentage | number:'1.2-2'}}%
+                          </b>
+                        </td>
+                      </ng-container>
 
-                  <tr mat-header-row *matHeaderRowDef="detailColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: detailColumns;" class="!h-10"></tr>
-                </table>
-              </div>
-            </div>
-          </td>
-        </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="detailColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: detailColumns;" class="!h-10"></tr>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let element; columns: displayedColumns;"
-            class="example-element-row hover:bg-gray-200 transition-colors !h-10"
-            [class.example-expanded-row]="expandedElement === element"
-            (click)="expandedElement = expandedElement === element ? null : element">
-        </tr>
-        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let element; columns: displayedColumns;"
+                class="example-element-row hover:bg-gray-200 transition-colors !h-10"
+                [class.example-expanded-row]="expandedElement === element"
+                (click)="expandedElement = expandedElement === element ? null : element">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 
-      </table>
+          </table>
+        </mat-tab>
+
+        <mat-tab label="El dorado">
+          <table mat-table [dataSource]="eldoradoDataSource" class="w-full !bg-transparent">
+            <!-- Columna Fecha -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize" style="white-space: nowrap;">{{element.formattedDate}}</td>
+            </ng-container>
+
+            <!-- Columna Monitor Eldorado -->
+            <ng-container matColumnDef="eldoradoMonitorRate">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor (Eldorado)</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                {{element.detail.monitorRate | number:'1.2-2'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Exchange Eldorado -->
+            <ng-container matColumnDef="eldoradoExchangeRate">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange (Eldorado)</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                {{element.detail.exchangeRate | number:'1.2-2'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Diferencia Eldorado -->
+            <ng-container matColumnDef="eldoradoDifference">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff (Eldorado)</th>
+              <td mat-cell *matCellDef="let element"
+                  [ngClass]="{
+                    'text-rose-500': element.detail.difference < 0,
+                    'text-emerald-500': element.detail.difference > 0,
+                    'text-gray-500': element.detail.difference === 0
+                  }"
+                  class="py-3 !border-gray-300 !text-sm md:!text-sm">
+                <b style="white-space: nowrap;">
+                  {{ element.detail.difference > 0 ? "▲" : (element.detail.difference < 0 ? "▼" : "=") }}
+                  {{element.detail.difference | number:'1.2-2'}} / {{element.detail.diffPercentage | number:'1.2-2'}}%
+                </b>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="eldoradoDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let element; columns: eldoradoDisplayedColumns;" class="!h-10"></tr>
+          </table>
+        </mat-tab>
+
+        <mat-tab label="Syklo">
+          <table mat-table [dataSource]="sykloDataSource" class="w-full !bg-transparent">
+            <!-- Columna Fecha -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize" style="white-space: nowrap;">{{element.formattedDate}}</td>
+            </ng-container>
+
+            <!-- Columna Monitor Syklo -->
+            <ng-container matColumnDef="sykloMonitorRate">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor (Syklo)</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                {{element.detail.monitorRate | number:'1.2-2'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Exchange Syklo -->
+            <ng-container matColumnDef="sykloExchangeRate">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange (Syklo)</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                {{element.detail.exchangeRate | number:'1.2-2'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Diferencia Syklo -->
+            <ng-container matColumnDef="sykloDifference">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff (Syklo)</th>
+              <td mat-cell *matCellDef="let element"
+                  [ngClass]="{
+                    'text-rose-500': element.detail.difference < 0,
+                    'text-emerald-500': element.detail.difference > 0,
+                    'text-gray-500': element.detail.difference === 0
+                  }"
+                  class="py-3 !border-gray-300 !text-sm md:!text-sm">
+                <b style="white-space: nowrap;">
+                  {{ element.detail.difference > 0 ? "▲" : (element.detail.difference < 0 ? "▼" : "=") }}
+                  {{element.detail.difference | number:'1.2-2'}} / {{element.detail.diffPercentage | number:'1.2-2'}}%
+                </b>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="sykloDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let element; columns: sykloDisplayedColumns;" class="!h-10"></tr>
+          </table>
+        </mat-tab>
+
+        <mat-tab label="Yadio">
+          <table mat-table [dataSource]="yadioDataSource" class="w-full !bg-transparent">
+            <!-- Columna Fecha -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Fecha</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm capitalize" style="white-space: nowrap;">{{element.formattedDate}}</td>
+            </ng-container>
+
+            <!-- Columna Monitor Yadio -->
+            <ng-container matColumnDef="yadioMonitorRate">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Monitor (Yadio)</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                {{element.detail.monitorRate | number:'1.2-2'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Exchange Yadio -->
+            <ng-container matColumnDef="yadioExchangeRate">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-semibold bg-gray-50 !text-sm md:!text-sm">Exchange (Yadio)</th>
+              <td mat-cell *matCellDef="let element" class="!border-gray-300 py-3 !text-sm md:!text-sm">
+                {{element.detail.exchangeRate | number:'1.2-2'}}
+              </td>
+            </ng-container>
+
+            <!-- Columna Diferencia Yadio -->
+            <ng-container matColumnDef="yadioDifference">
+              <th mat-header-cell *matHeaderCellDef class="!border-gray-300 font-bold bg-gray-50 !text-sm md:!text-sm">Diff (Yadio)</th>
+              <td mat-cell *matCellDef="let element"
+                  [ngClass]="{
+                    'text-rose-500': element.detail.difference < 0,
+                    'text-emerald-500': element.detail.difference > 0,
+                    'text-gray-500': element.detail.difference === 0
+                  }"
+                  class="py-3 !border-gray-300 !text-sm md:!text-sm">
+                <b style="white-space: nowrap;">
+                  {{ element.detail.difference > 0 ? "▲" : (element.detail.difference < 0 ? "▼" : "=") }}
+                  {{element.detail.difference | number:'1.2-2'}} / {{element.detail.diffPercentage | number:'1.2-2'}}%
+                </b>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="yadioDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let element; columns: yadioDisplayedColumns;" class="!h-10"></tr>
+          </table>
+        </mat-tab>
+      </mat-tab-group>
 
       <mat-paginator
         *ngIf="!loading"
@@ -216,11 +360,19 @@ export class ExampleModalComponent implements OnInit {
   expandedElement: ComparisonData | null = null;
   dataSource: ComparisonData[] = [];
 
+  eldoradoDataSource: any[] = [];
+  sykloDataSource: any[] = [];
+  yadioDataSource: any[] = [];
+
   // Paginación
   pageSize = 10;
   pageIndex = 0;
   totalRecords = 0;
   loading = true;
+
+  eldoradoDisplayedColumns: string[] = ['date', 'eldoradoMonitorRate', 'eldoradoExchangeRate', 'eldoradoDifference'];
+  sykloDisplayedColumns: string[] = ['date', 'sykloMonitorRate', 'sykloExchangeRate', 'sykloDifference'];
+  yadioDisplayedColumns: string[] = ['date', 'yadioMonitorRate', 'yadioExchangeRate', 'yadioDifference'];
 
   constructor(
     public dialogRef: MatDialogRef<ExampleModalComponent>,
@@ -324,6 +476,22 @@ export class ExampleModalComponent implements OnInit {
       // Filtrar elementos nulos y asignar al dataSource
       this.dataSource = tempDataSource.filter(item => item !== null) as ComparisonData[];
 
+      // Filtrar datos para cada fuente
+      this.eldoradoDataSource = this.dataSource.map(item => ({
+        formattedDate: item.formattedDate,
+        detail: item.details.find(d => d.source === 'Eldorado')
+      })).filter(item => item.detail !== undefined);
+
+      this.sykloDataSource = this.dataSource.map(item => ({
+        formattedDate: item.formattedDate,
+        detail: item.details.find(d => d.source === 'Syklo')
+      })).filter(item => item.detail !== undefined);
+
+      this.yadioDataSource = this.dataSource.map(item => ({
+        formattedDate: item.formattedDate,
+        detail: item.details.find(d => d.source === 'Yadio')
+      })).filter(item => item.detail !== undefined);
+
     } catch (err) {
       console.error('Error procesando datos:', err);
     } finally {
@@ -337,3 +505,5 @@ export class ExampleModalComponent implements OnInit {
     this.loadData();
   }
 }
+
+const ELEMENT_DATA: ComparisonData[] = []; // Esto parece ser mock data, lo removeremos o ajustaremos si es necesario
