@@ -40,7 +40,6 @@ interface ChartSeries {
   type: 'monitor' | 'exchange' | 'bcv';
   isTotal?: boolean;
   priceLine?: IPriceLine;
-  markers?: SeriesMarker<UTCTimestamp>[];
 }
 
 interface ChartSettings {
@@ -75,6 +74,10 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Series disponibles
   series: ChartSeries[] = [];
+
+  // Serie para marcadores
+  private monitorMarkersData: LineData[] = [];
+  private monitorMarkersSeries?: ISeriesApi<"Line">;
 
   // Configuración del gráfico
   settings: ChartSettings = {
@@ -196,20 +199,8 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         // Serie total de Monitor
         const monitorTotalData = this.processRateData(monitorRates, 'total_rate', 'datetime');
 
-        // Remove last point
-
-
-        // Crear marcadores para todos los puntos de la serie monitor_total
-        const monitorTotalMarkers: SeriesMarker<UTCTimestamp>[] = monitorTotalData.map(dataPoint => ({
-          time: dataPoint.time as UTCTimestamp,
-          position: 'inBar',
-          color: '#5C9DFF', // Un azul más vivo
-          shape: 'circle',
-          size: 3, // Tamaño más grande para mejor visibilidad
-          text: 'M' // Texto para identificar que es un punto de Monitor
-        }));
-
-        // remove last point
+        // Guardar datos para la serie de marcadores
+        this.monitorMarkersData = [...monitorTotalData];
 
         this.addSeries({
           id: 'monitor_total',
@@ -225,7 +216,6 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           visible: true,
           isTotal: true,
-          markers: monitorTotalMarkers,
         });
 
         // Series individuales de Monitor
@@ -360,6 +350,12 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
   private updateAllSeries() {
     if (!this.chart) return;
 
+    // Remover serie de marcadores si existe
+    if (this.monitorMarkersSeries) {
+      this.chart.removeSeries(this.monitorMarkersSeries);
+      this.monitorMarkersSeries = undefined;
+    }
+
     // Eliminar series existentes
     this.series.forEach(series => {
       if (series.series) {
@@ -382,11 +378,6 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
       series.series = this.chart?.addSeries(LineSeries, options);
       series.series?.setData(series.data);
-
-      // Añadir marcadores si existen
-      if (series.markers && series.markers.length > 0 && series.series) {
-        createSeriesMarkers(series.series, series.markers);
-      }
     });
 
     // Actualizar visibilidad
@@ -395,8 +386,51 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // Añadir línea horizontal con el último valor de monitor total
     this.addMonitorTotalPriceLine();
 
+    // Añadir marcadores como una serie independiente
+    this.addMonitorMarkers();
+
     // Ajustar la escala para mostrar todos los datos
     this.chart.timeScale().fitContent();
+  }
+
+  // Añadir marcadores como una serie independiente
+  private addMonitorMarkers() {
+    if (!this.chart || !this.showMonitorMarkers || this.monitorMarkersData.length === 0) return;
+
+    // Crear una serie de línea para los marcadores
+    this.monitorMarkersSeries = this.chart.addSeries(LineSeries, {
+      color: '#5C9DFF',
+      lineVisible: false,
+      lastValueVisible: false,
+      priceLineVisible: false,
+      lineStyle: LineStyle.Dotted,
+      lineWidth: 1,
+      crosshairMarkerVisible: true,
+      crosshairMarkerRadius: 6,
+      title: 'Monitor Markers'
+    });
+
+    // Establecer los datos
+    this.monitorMarkersSeries.setData(this.monitorMarkersData);
+
+    // Añadir los marcadores usando createSeriesMarkers
+    const markers: SeriesMarker<UTCTimestamp>[] = this.monitorMarkersData.map(dataPoint => ({
+      time: dataPoint.time as UTCTimestamp,
+      position: 'inBar',
+      color: '#5C9DFF',
+      shape: 'circle',
+      size: 6
+    }));
+
+    createSeriesMarkers(this.monitorMarkersSeries, markers);
+
+    // Actualizar visibilidad
+    const monitorTotalSeries = this.series.find(s => s.id === 'monitor_total');
+    if (monitorTotalSeries) {
+      this.monitorMarkersSeries.applyOptions({
+        visible: monitorTotalSeries.visible && this.showMonitorMarkers
+      });
+    }
   }
 
   // Añadir línea horizontal con el último valor de monitor total
@@ -425,6 +459,14 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     });
+
+    // Actualizar también la visibilidad de la serie de marcadores
+    if (this.monitorMarkersSeries) {
+      const monitorTotalSeries = this.series.find(s => s.id === 'monitor_total');
+      this.monitorMarkersSeries.applyOptions({
+        visible: monitorTotalSeries?.visible && this.showMonitorMarkers
+      });
+    }
   }
 
   // Actualizar el tema del gráfico
@@ -491,22 +533,27 @@ export class PriceChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // Permitir ocultar cualquier serie, incluidas las series totales
     series.visible = !series.visible;
     this.updateSeriesVisibility();
+
+    // Si estamos alternando monitor_total, actualizar también los marcadores
+    if (seriesId === 'monitor_total' && this.monitorMarkersSeries) {
+      this.monitorMarkersSeries.applyOptions({
+        visible: series.visible && this.showMonitorMarkers
+      });
+    }
   }
 
   // Alternar visibilidad de los marcadores de monitor_total
   toggleMonitorMarkers() {
     this.showMonitorMarkers = !this.showMonitorMarkers;
 
-    // Encontrar la serie monitor_total
-    const monitorTotal = this.series.find(s => s.id === 'monitor_total');
-    if (!monitorTotal || !monitorTotal.series || !monitorTotal.markers) return;
-
-    if (this.showMonitorMarkers) {
-      // Mostrar marcadores
-      createSeriesMarkers(monitorTotal.series, monitorTotal.markers);
-    } else {
-      // Ocultar marcadores (estableciendo un array vacío)
-      createSeriesMarkers(monitorTotal.series, []);
+    if (this.monitorMarkersSeries) {
+      const monitorTotalSeries = this.series.find(s => s.id === 'monitor_total');
+      this.monitorMarkersSeries.applyOptions({
+        visible: monitorTotalSeries?.visible && this.showMonitorMarkers
+      });
+    } else if (this.showMonitorMarkers) {
+      // Si no existe la serie de marcadores pero queremos mostrarlos, la añadimos
+      this.addMonitorMarkers();
     }
   }
 }
