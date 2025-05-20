@@ -149,24 +149,24 @@ export class InicioComponent implements OnInit {
         exchange: 'Monitor',
         current_rate: this.monitorRates[0].total_rate,
         binance_rate: this.exchangeRates[0].binance_rate,
-        diferencia: this.exchangeRates[0].binance_rate-this.monitorRates[0].total_rate,
-        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.monitorRates[0].total_rate) / this.monitorRates[0].total_rate) * 100,
+        diferencia: this.exchangeRates[0].binance_rate-this.monitorRates[0].total_rate as number,
+        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.monitorRates[0].total_rate as number) / this.monitorRates[0].total_rate as number) * 100,
         last_update: moment(this.monitorRates[0].datetime)
       },
       {
         exchange: 'Promedio',
-        current_rate: this.monitorRates[0].avg_rate,
+        current_rate: this.monitorRates[0].avg_rate as number,
         binance_rate: this.exchangeRates[0].binance_rate,
-        diferencia: this.exchangeRates[0].binance_rate-this.monitorRates[0].avg_rate,
-        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.monitorRates[0].avg_rate) / this.monitorRates[0].avg_rate) * 100,
+        diferencia: this.exchangeRates[0].binance_rate-(this.monitorRates[0].avg_rate as number),
+        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-(this.monitorRates[0].avg_rate as number)) / (this.monitorRates[0].avg_rate as number)) * 100,
         last_update: moment(this.monitorRates[0].datetime)
       },
       {
         exchange: 'BCV',
-        current_rate: this.bcvRates[0].bcv_rate,
+        current_rate: this.bcvRates[0].bcv_rate as number,
         binance_rate: this.exchangeRates[0].binance_rate,
-        diferencia: this.exchangeRates[0].binance_rate-this.bcvRates[0].bcv_rate,
-        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-this.bcvRates[0].bcv_rate) / this.bcvRates[0].bcv_rate) * 100,
+        diferencia: this.exchangeRates[0].binance_rate-(this.bcvRates[0].bcv_rate as number),
+        diferencia_porcentaje: ((this.exchangeRates[0].binance_rate-(this.bcvRates[0].bcv_rate as number)) / (this.bcvRates[0].bcv_rate as number)) * 100,
         last_update: moment(this.bcvRates[0].created_at)
       }
     ];

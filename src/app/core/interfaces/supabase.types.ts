@@ -11,7 +11,7 @@ export type Database = {
     Tables: {
       bcv_rates: {
         Row: {
-          bcv_rate: number
+          bcv_rate: number | null
           created_at: string | null
           id: number
         }
@@ -60,12 +60,13 @@ export type Database = {
       monitor_rates: {
         Row: {
           airtm_rate: number
-          avg_rate: number
+          avg_rate: number | null
           billeterap2p_rate: number
           cambiosrya_rate: number
           created_at: string | null
           datetime: string | null
           eldorado_rate: number
+          exchange_rate_id: number | null
           id: number
           mkfrontera_rate: number
           syklo_rate: number
@@ -81,6 +82,7 @@ export type Database = {
           created_at?: string | null
           datetime?: string | null
           eldorado_rate: number
+          exchange_rate_id?: number | null
           id?: number
           mkfrontera_rate: number
           syklo_rate: number
@@ -96,6 +98,7 @@ export type Database = {
           created_at?: string | null
           datetime?: string | null
           eldorado_rate?: number
+          exchange_rate_id?: number | null
           id?: number
           mkfrontera_rate?: number
           syklo_rate?: number

@@ -17,6 +17,25 @@ class MonitorRates {
      */
     static async insertRates(rates) {
         // Calcular el total_rate (promedio de todas las tasas)
+        const insertDatetime = rates.datetime ? new Date(rates.datetime) : new Date();
+
+        // Buscar el registro más reciente en exchange_rates con fecha <= insertDatetime
+        const { data: exchangeRateData, error: exchangeRateError } = await supabase
+            .from('exchange_rates')
+            .select('id')
+            .lte('created_at', insertDatetime.toISOString())
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        if (exchangeRateError) {
+            console.error("Error fetching closest exchange_rate:", exchangeRateError);
+            // Decidir cómo manejar este error. Podríamos lanzar el error o insertar con exchange_rate_id nulo.
+            // Por ahora, lanzaremos el error para asegurar la consistencia de los datos.
+            throw exchangeRateError;
+        }
+
+        const exchangeRateId = exchangeRateData && exchangeRateData.length > 0 ? exchangeRateData[0].id : null;
+
         const total_rate = (
             parseFloat(rates.airtm_rate) +
             parseFloat(rates.billeterap2p_rate) +
@@ -40,7 +59,8 @@ class MonitorRates {
                 usdtbnbvzla_rate : parseFloat(rates.usdtbnbvzla_rate.toFixed(2)),
                 yadio_rate       : parseFloat(rates.yadio_rate.toFixed(2)),
                 total_rate       : parseFloat(total_rate.toFixed(2)),
-                datetime         : rates.datetime ? new Date(rates.datetime).toISOString(): new Date().toISOString()
+                datetime         : insertDatetime.toISOString(),
+                exchange_rate_id : exchangeRateId
             }])
             .select();
 
