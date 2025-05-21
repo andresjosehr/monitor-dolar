@@ -186,16 +186,11 @@ program
   });
 
   program
-  .command("epa")
+  .command("historialMonitor")
   .description("")
   .action(async () => {
-    const { lastRates, error } = await supabase
-    .from("exchange_rates")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-    console.log(lastRates);
+    const rates = await monitorDolarService.getHistoricalRates();
+    // console.log(rates);
   });
 
 
