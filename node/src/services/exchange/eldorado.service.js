@@ -1,4 +1,10 @@
 const axios = require('axios');
+const { createClient } = require('@supabase/supabase-js');
+
+// Configuración de Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 class EldoradoService {
     constructor() {
@@ -58,12 +64,14 @@ class EldoradoService {
         const amounts = [100, 1000, 10000];
         let totalAverage = 0;
         let totalResults = 0;
+        let allOffers = [];
 
         for (const amount of amounts) {
             try {
                 const offers = await this.getOffers({ amount, type: this.type.buy });
 
                 if (offers && offers.length > 0) {
+                    allOffers = [...allOffers, ...offers];
                     const sum = offers.reduce((acc, offer) => acc + parseFloat(offer.price), 0);
                     const average = sum / offers.length;
                     totalAverage += average;
@@ -76,7 +84,41 @@ class EldoradoService {
             }
         }
 
-        return parseFloat((totalResults > 0 ? totalAverage / totalResults : 0).toFixed(2));
+        return {
+            rate: parseFloat((totalResults > 0 ? totalAverage / totalResults : 0).toFixed(2)),
+            offers: allOffers
+        };
+    }
+
+    async insertOffers(offers, exchangeRatesId = null) {
+        try {
+            const dataToInsert = offers.map(offer => ({
+                eldorado_id: offer.id.toString(),
+                price: offer.price,
+                usdt_to_sell: offer.usdtToSell,
+                completion_rate: offer.completionRate,
+                mm_score: offer.reviews,
+                pay_time: offer.time,
+                min_amount: offer.minAmount,
+                max_amount: offer.maxAmount,
+                exchange_rates_id: exchangeRatesId,
+            }));
+
+            const { data, error } = await supabase
+                .from('eldorado_orders')
+                .insert(dataToInsert);
+
+            if (error) {
+                console.error('Error al insertar ofertas de Eldorado en Supabase:', error);
+                throw error;
+            }
+
+            console.log(`Se insertaron ${dataToInsert.length} ofertas de Eldorado en la base de datos`);
+            return data;
+        } catch (error) {
+            console.error('Error en insertOffers de Eldorado:', error);
+            throw new Error('No se pudieron insertar las ofertas de Eldorado en la base de datos');
+        }
     }
 }
 
