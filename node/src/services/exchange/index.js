@@ -5,6 +5,7 @@ const binanceService = require('./binance.service');
 const eldoradoService = require('./eldorado.service');
 const sykloService = require('./syklo.service');
 const exchangeRates = require('../models/exchangeRates');
+const supabase = require('../../config/supabase');
 
 class ExchangeService {
     constructor() {
@@ -57,18 +58,27 @@ class ExchangeService {
     async insertAllRates() {
         const { average, rates } = await this.getAverageRate();
 
+        // Extraer las ofertas de Binance antes de mapear las tasas
+        const binanceOffers = rates.binance.offers;
+        const binanceRate = rates.binance.rate;
+
         // Mapear los nombres de los servicios a los nombres de las columnas en la base de datos
         const mappedRates = {
             yadio_rate   : rates.yadio,
-            binance_rate : rates.binance,
+            binance_rate : binanceRate,
             eldorado_rate: rates.eldorado,
             syklo_rate   : rates.syklo,
             total_rate   : average,
-            // Agregar más mapeos según sea necesario
         };
 
         // Insertar las tasas en la base de datos
         const result = await exchangeRates.insertRates(mappedRates);
+        const exchangeRatesId = result[0].id;
+
+        // Insertar las ofertas de Binance con el ID de exchange_rates
+        if (binanceOffers && binanceOffers.length > 0) {
+            await this.services.binance.insertOffers(binanceOffers, exchangeRatesId);
+        }
 
         return {
             success: true,
